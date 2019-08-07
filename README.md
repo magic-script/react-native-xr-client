@@ -1,5 +1,7 @@
 
-# react-native-xr-client
+# React Native XR Client
+
+React Native XR SDK Client Library
 
 ## Getting started
 
