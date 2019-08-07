@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.preserve_paths = 'README.md', 'package.json', 'index.js'
-  s.source_files  = "ios/src/*.{h,m}"
+  s.source_files  = "src/*.{h,m}"
   
   s.dependency "React"
   #s.dependency "others"
