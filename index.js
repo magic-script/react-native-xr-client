@@ -1,6 +1,6 @@
+//
+import { NativeModules } from "react-native";
 
-import { NativeModules } from 'react-native';
+const { XrClientSession } = NativeModules;
 
-const { RNXrClient } = NativeModules;
-
-export default RNXrClient;
+export default XrClientSession;

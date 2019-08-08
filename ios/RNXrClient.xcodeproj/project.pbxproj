@@ -15,7 +15,6 @@
 		7D67194722FB865F00BED26C /* mlxr_ios_client_internal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D67194622FB865F00BED26C /* mlxr_ios_client_internal.framework */; };
 		7D9CBBB522FB6300004888B3 /* React.xcodeproj in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D9CBB8222FB62C6004888B3 /* React.xcodeproj */; };
 		7D9CBBB622FB63A2004888B3 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D9CBB9622FB62C6004888B3 /* libReact.a */; };
-		B3E7B58A1CC2AC0600A0062D /* RNXrClient.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* RNXrClient.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -147,7 +146,7 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRNXrClient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNXrClient.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		7D67191A22FB839700BED26C /* RNXrClient-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNXrClient-Bridging-Header.h; path = "src/RNXrClient-Bridging-Header.h"; sourceTree = "<group>"; };
+		7D67191A22FB839700BED26C /* RNXrClient-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "RNXrClient-Bridging-Header.h"; path = "src/RNXrClient-Bridging-Header.h"; sourceTree = "<group>"; };
 		7D67192B22FB839700BED26C /* XrClientAnchorData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = XrClientAnchorData.swift; path = src/XrClientAnchorData.swift; sourceTree = "<group>"; };
 		7D67192C22FB839700BED26C /* XRClientBoundedVolume.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = XRClientBoundedVolume.swift; path = src/XRClientBoundedVolume.swift; sourceTree = "<group>"; };
 		7D67192D22FB839700BED26C /* XrClientSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = XrClientSession.swift; path = src/XrClientSession.swift; sourceTree = "<group>"; };
@@ -155,8 +154,6 @@
 		7D67192F22FB839700BED26C /* XrClientLocalization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = XrClientLocalization.swift; path = src/XrClientLocalization.swift; sourceTree = "<group>"; };
 		7D67194622FB865F00BED26C /* mlxr_ios_client_internal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = mlxr_ios_client_internal.framework; path = external/mlxr_ios_client_internal.framework; sourceTree = "<group>"; };
 		7D9CBB8222FB62C6004888B3 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
-		B3E7B5881CC2AC0600A0062D /* RNXrClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNXrClient.h; path = src/RNXrClient.h; sourceTree = "<group>"; };
-		B3E7B5891CC2AC0600A0062D /* RNXrClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNXrClient.m; path = src/RNXrClient.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -189,8 +186,6 @@
 				7D67192F22FB839700BED26C /* XrClientLocalization.swift */,
 				7D67192E22FB839700BED26C /* XrClientSession.m */,
 				7D67192D22FB839700BED26C /* XrClientSession.swift */,
-				B3E7B5881CC2AC0600A0062D /* RNXrClient.h */,
-				B3E7B5891CC2AC0600A0062D /* RNXrClient.m */,
 				7D67191A22FB839700BED26C /* RNXrClient-Bridging-Header.h */,
 				134814211AA4EA7D00B7C361 /* Products */,
 				7D9CBB8122FB62C6004888B3 /* Frameworks */,
@@ -408,7 +403,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B3E7B58A1CC2AC0600A0062D /* RNXrClient.m in Sources */,
 				7D67193422FB839700BED26C /* XrClientLocalization.swift in Sources */,
 				7D67193222FB839700BED26C /* XrClientSession.swift in Sources */,
 				7D67193322FB839700BED26C /* XrClientSession.m in Sources */,
