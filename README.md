@@ -28,4 +28,10 @@ import RNXrClient from 'react-native-xr-client';
 // TODO: What to do with the module?
 RNXrClient;
 ```
-  
+
+## Cleanup and rebuild the library
+```sh
+rm -rf node_modules && yarn cache clean && yarn
+react-native start --reset-cache
+```
+Run in Xcode
