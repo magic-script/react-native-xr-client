@@ -14,7 +14,6 @@
 		7D67193422FB839700BED26C /* XrClientLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D67192F22FB839700BED26C /* XrClientLocalization.swift */; };
 		7D67194722FB865F00BED26C /* mlxr_ios_client_internal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D67194622FB865F00BED26C /* mlxr_ios_client_internal.framework */; };
 		7D9CBBB522FB6300004888B3 /* React.xcodeproj in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D9CBB8222FB62C6004888B3 /* React.xcodeproj */; };
-		7D9CBBB622FB63A2004888B3 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D9CBB9622FB62C6004888B3 /* libReact.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -162,7 +161,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				7D67194722FB865F00BED26C /* mlxr_ios_client_internal.framework in Frameworks */,
-				7D9CBBB622FB63A2004888B3 /* libReact.a in Frameworks */,
 				7D9CBBB522FB6300004888B3 /* React.xcodeproj in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
