@@ -14,7 +14,7 @@ import mlxr_ios_client_internal
 @objc(XrClientSession)
 class XrClientSession: NSObject {
 
-    static fileprivate weak var arSession: ARSession?
+    static public weak var arSession: ARSession?
     static fileprivate let locationManager = CLLocationManager()
     fileprivate var xrClientSession: MLXRSession?
     fileprivate var internalLocation: CLLocation!
@@ -50,12 +50,10 @@ class XrClientSession: NSObject {
     }
 
     @objc
-    public func registerARSession(arSession: ARSession, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        print(arSession);
+    static public func registerARSession(_ arSession: ARSession) {
         XrClientSession.arSession = arSession
-        resolve(true);
     }
-    
+
     @objc
     public func connect(_ address: String, deviceId: String, token: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         DispatchQueue.main.async { [weak self] in
