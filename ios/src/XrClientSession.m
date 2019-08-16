@@ -7,8 +7,8 @@
 //
 
 #import <React/RCTBridgeModule.h>
-#import <ARKit/ARSession.h>
 #import <mlxr_ios_client_internal/mlxr_session_internal.h>
+#include "XrClient.h"
 
 @interface RCT_EXTERN_MODULE(XrClientSession, NSObject)
 
@@ -18,6 +18,5 @@ RCT_EXTERN_METHOD(getAllAnchors:(RCTPromiseResolveBlock)resolve reject:(RCTPromi
 RCT_EXTERN_METHOD(getAnchorByPcfId:(NSString *)pcfId resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(getLocalizationStatus:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(getAllBoundedVolumes:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
-RCT_EXTERN_METHOD(registerArSession:(ARSession*) resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 
 @end
