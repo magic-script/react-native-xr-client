@@ -59,7 +59,7 @@ class XrClientAnchorData: NSObject {
         return [
             "state": getState(),
             "confidence": getConfidence(),
-            "pose": getPose(),
+            "pose": getFlatPose(),
             "anchorId": getAnchorId()
         ]
     }

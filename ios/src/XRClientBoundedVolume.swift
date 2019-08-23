@@ -53,7 +53,7 @@ class XrClientBoundedVolume: NSObject {
         return [
             "scale": getScale(),
             "properties": getProperties(),
-            "pose": getPose(),
+            "pose": getFlatPose(),
             "id": getId(),
             "areaId": getAreaId()
         ]
