@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import mlxr_ios_client_internal
+import MLXRInternal
 
 class XrClientBoundedVolume: NSObject {
     fileprivate let boundedVolume: MLXRBoundedVolume!
@@ -45,7 +45,7 @@ class XrClientBoundedVolume: NSObject {
         return boundedVolume.getPose()!.pose * XrClientAnchorData.magic_rotation
     }
     
-    public func getProperties() -> [String:String] {
+    public func getProperties() -> [String:Data] {
         return boundedVolume.getProperties()
     }
     

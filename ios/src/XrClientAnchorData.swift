@@ -8,7 +8,7 @@
 
 import Foundation
 import SceneKit
-import mlxr_ios_client_internal
+import MLXRInternal
 
 class XrClientAnchorData: NSObject {
     fileprivate let anchorData: MLXRAnchor!
@@ -48,7 +48,7 @@ class XrClientAnchorData: NSObject {
     }
 
     public func getMagicPose() -> simd_float4x4 {
-        return anchorData.getPose()!.pose * XrClientAnchorData.magic_rotation
+        return anchorData.getPose()!.pose
     }
 
     public func getAnchorId() -> String {

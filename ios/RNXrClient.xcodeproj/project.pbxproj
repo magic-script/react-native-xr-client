@@ -12,7 +12,6 @@
 		7D67193222FB839700BED26C /* XrClientSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D67192D22FB839700BED26C /* XrClientSession.swift */; };
 		7D67193322FB839700BED26C /* XrClientSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D67192E22FB839700BED26C /* XrClientSession.m */; };
 		7D67193422FB839700BED26C /* XrClientLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D67192F22FB839700BED26C /* XrClientLocalization.swift */; };
-		7D67194722FB865F00BED26C /* mlxr_ios_client_internal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D67194622FB865F00BED26C /* mlxr_ios_client_internal.framework */; };
 		7D9CBBB522FB6300004888B3 /* React.xcodeproj in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D9CBB8222FB62C6004888B3 /* React.xcodeproj */; };
 		A9E850B92306405600AA0CF3 /* XrClient.h in Headers */ = {isa = PBXBuildFile; fileRef = A9E850B823063FBA00AA0CF3 /* XrClient.h */; };
 		A9E850BC23064B6B00AA0CF3 /* XrClient.m in Sources */ = {isa = PBXBuildFile; fileRef = A9E850BB23064B6B00AA0CF3 /* XrClient.m */; };
@@ -155,7 +154,6 @@
 		7D67192D22FB839700BED26C /* XrClientSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = XrClientSession.swift; path = src/XrClientSession.swift; sourceTree = "<group>"; };
 		7D67192E22FB839700BED26C /* XrClientSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XrClientSession.m; path = src/XrClientSession.m; sourceTree = "<group>"; };
 		7D67192F22FB839700BED26C /* XrClientLocalization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = XrClientLocalization.swift; path = src/XrClientLocalization.swift; sourceTree = "<group>"; };
-		7D67194622FB865F00BED26C /* mlxr_ios_client_internal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = mlxr_ios_client_internal.framework; path = external/mlxr_ios_client_internal.framework; sourceTree = "<group>"; };
 		7D9CBB8222FB62C6004888B3 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
 		A9E850B823063FBA00AA0CF3 /* XrClient.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = XrClient.h; sourceTree = "<group>"; };
 		A9E850BB23064B6B00AA0CF3 /* XrClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = XrClient.m; path = src/XrClient.m; sourceTree = "<group>"; };
@@ -166,7 +164,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7D67194722FB865F00BED26C /* mlxr_ios_client_internal.framework in Frameworks */,
 				7D9CBBB522FB6300004888B3 /* React.xcodeproj in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -201,7 +198,6 @@
 		7D9CBB8122FB62C6004888B3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				7D67194622FB865F00BED26C /* mlxr_ios_client_internal.framework */,
 				7D9CBB8222FB62C6004888B3 /* React.xcodeproj */,
 			);
 			name = Frameworks;
