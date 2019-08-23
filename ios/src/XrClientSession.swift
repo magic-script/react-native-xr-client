@@ -125,20 +125,9 @@ class XrClientSession: NSObject {
             
             let bvs = xrSession.getAllBoundedVolumes()
             print("getAllBoundedVolumes:" + String(bvs.count))
-            var pcfToPPMap: [String: String] = [
-                "9A90E918-A696-7018-A7C7-0242C0A8FE0D": "1870D08E-BADA-FCD1-C140-25569291A885", // Mira
-                "9A90D1EE-A696-7018-B29F-0242C0A8FE0D": "1870BD54-5445-E5C7-5EF2-D474D84755B3", // Hyperion
-                "9A90DD4C-A696-7018-9254-0242C0A8FE0D": "18708D47-B1C8-97A4-765A-1DFE0C2DB896", // Titon
-                "9A90BA7E-A696-7018-BE4E-0242C0A8FE0D": "187006F3-74D0-04D0-7C76-833B59D91CB3", // Calypso
-                "FE355392-A76C-7018-A067-0242C0A8FE0B": "1870199D-CF24-49D9-6B8E-28A7EA37B88D", // Io
-                "FE3530BA-A76C-7018-AF50-0242C0A8FE0B": "187000B1-3211-FA4E-9350-ADA5CBCCE3A3", // Atlas
-                "940A834A-A69D-7018-84BD-0242C0A8FE0D": "1870BEA4-AD6F-7833-72CC-8D0FE6C84196", // Antares
-                //                "940A834A-A69D-7018-84BD-0242C0A8FE0D": "1870BEA4-AD6F-7833-72CC-8D0FE6C84196", // Electra
-                "C4763982-A79E-7018-8D51-0242C0A8FE0B": "18701E96-609C-BA2E-0D9D-272EE0985C9F"  // Triton
-            ];
-            
+
             for bv in bvs {
-                if let ppid = pcfToPPMap[bv.getId()!.uuidString], let pcfID: UUID = UUID.init(uuidString: ppid), let sdkAncror = xrSession.getAnchorByPcfId(pcfID), let bvMatrix = bv.getPose() {
+                if let pcfID: UUID = UUID.init(uuidString: bv.getId()!.uuidString), let sdkAncror = xrSession.getAnchorByPcfId(pcfID), let bvMatrix = bv.getPose() {
                     let xrAnchor = XrClientAnchorData(sdkAncror);
                     let pose: simd_float4x4 = xrAnchor.getMagicPose() * bvMatrix.pose;
                     let testAnchor = ARAnchor(name: xrAnchor.getAnchorId(), transform: pose)
