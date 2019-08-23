@@ -24,8 +24,8 @@ class XrClientBoundedVolume: NSObject {
         return boundedVolume.getId()?.uuidString ?? ""
     }
 
-    public func getPose() -> [Float] {
-        let pose = getMagicPose()
+    public func getFlatPose() -> [Float] {
+        let pose = getPose()
         return [
             pose[0][0], pose[1][0], pose[2][0], pose[3][0],
             pose[0][1], pose[1][1], pose[2][1], pose[3][1],
@@ -41,8 +41,8 @@ class XrClientBoundedVolume: NSObject {
         return [1,1,1]
     }
     
-    public func getMagicPose() -> simd_float4x4 {
-        return boundedVolume.getPose()!.pose * XrClientAnchorData.magic_rotation
+    public func getPose() -> simd_float4x4 {
+        return boundedVolume.getPose()?.pose ?? matrix_identity_float4x4
     }
     
     public func getProperties() -> [String:Data] {
