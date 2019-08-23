@@ -64,16 +64,3 @@ class XrClientAnchorData: NSObject {
         ]
     }
 }
-
-// Magic rotation
-extension XrClientAnchorData {
-    static fileprivate func makeRotate(radians: Float, _ x: Float, _ y: Float, _ z: Float) -> float4x4 {
-        return unsafeBitCast(GLKMatrix4MakeRotation(radians, x, y, z), to: float4x4.self)
-    }
-
-    static fileprivate func rotate(radians: Float, _ x: Float, _ y: Float, _ z: Float) -> float4x4 {
-        return makeRotate(radians: radians, x, y, z)
-    }
-
-    static public let magic_rotation: simd_float4x4 = rotate(radians: 3.14, 1.0, 0, 0)
-}
