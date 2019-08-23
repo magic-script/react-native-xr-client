@@ -37,8 +37,8 @@ class XrClientAnchorData: NSObject {
         ]
     }
 
-    public func getPose() -> [Float] {
-        let pose = getMagicPose()
+    public func getFlatPose() -> [Float] {
+        let pose = getPose()
         return [
             pose[0][0], pose[1][0], pose[2][0], pose[3][0],
             pose[0][1], pose[1][1], pose[2][1], pose[3][1],
@@ -47,8 +47,8 @@ class XrClientAnchorData: NSObject {
         ]
     }
 
-    public func getMagicPose() -> simd_float4x4 {
-        return anchorData.getPose()!.pose
+    public func getPose() -> simd_float4x4 {
+        return anchorData.getPose()?.pose ?? matrix_identity_float4x4
     }
 
     public func getAnchorId() -> String {
@@ -59,21 +59,8 @@ class XrClientAnchorData: NSObject {
         return [
             "state": getState(),
             "confidence": getConfidence(),
-            "pose": getPose(),
+            "pose": getFlatPose(),
             "anchorId": getAnchorId()
         ]
     }
-}
-
-// Magic rotation
-extension XrClientAnchorData {
-    static fileprivate func makeRotate(radians: Float, _ x: Float, _ y: Float, _ z: Float) -> float4x4 {
-        return unsafeBitCast(GLKMatrix4MakeRotation(radians, x, y, z), to: float4x4.self)
-    }
-
-    static fileprivate func rotate(radians: Float, _ x: Float, _ y: Float, _ z: Float) -> float4x4 {
-        return makeRotate(radians: radians, x, y, z)
-    }
-
-    static public let magic_rotation: simd_float4x4 = rotate(radians: 3.14, 1.0, 0, 0)
 }
