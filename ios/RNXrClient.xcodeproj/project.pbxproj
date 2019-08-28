@@ -15,6 +15,7 @@
 		7D9CBBB522FB6300004888B3 /* React.xcodeproj in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D9CBB8222FB62C6004888B3 /* React.xcodeproj */; };
 		A9E850BC23064B6B00AA0CF3 /* XrClient.m in Sources */ = {isa = PBXBuildFile; fileRef = A9E850BB23064B6B00AA0CF3 /* XrClient.m */; };
 		BC8036982317008000C2D199 /* XrClient.h in Headers */ = {isa = PBXBuildFile; fileRef = BC8036872317008000C2D199 /* XrClient.h */; };
+		EEF09DF32317244700D39D20 /* XrClient.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = BC8036872317008000C2D199 /* XrClient.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -146,6 +147,7 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
+				EEF09DF32317244700D39D20 /* XrClient.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
