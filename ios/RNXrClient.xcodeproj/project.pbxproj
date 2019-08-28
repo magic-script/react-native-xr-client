@@ -13,9 +13,8 @@
 		7D67193322FB839700BED26C /* XrClientSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D67192E22FB839700BED26C /* XrClientSession.m */; };
 		7D67193422FB839700BED26C /* XrClientLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D67192F22FB839700BED26C /* XrClientLocalization.swift */; };
 		7D9CBBB522FB6300004888B3 /* React.xcodeproj in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D9CBB8222FB62C6004888B3 /* React.xcodeproj */; };
-		A9E850B92306405600AA0CF3 /* XrClient.h in Headers */ = {isa = PBXBuildFile; fileRef = A9E850B823063FBA00AA0CF3 /* XrClient.h */; };
 		A9E850BC23064B6B00AA0CF3 /* XrClient.m in Sources */ = {isa = PBXBuildFile; fileRef = A9E850BB23064B6B00AA0CF3 /* XrClient.m */; };
-		A9E850BE2306509100AA0CF3 /* XrClient.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = A9E850B823063FBA00AA0CF3 /* XrClient.h */; };
+		BC8036982317008000C2D199 /* XrClient.h in Headers */ = {isa = PBXBuildFile; fileRef = BC8036872317008000C2D199 /* XrClient.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -131,6 +130,13 @@
 			remoteGlobalIDString = ED296FEE214C9CF800B7C4FE;
 			remoteInfo = "jsiexecutor-tvOS";
 		};
+		BC80369A2317023700C2D199 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7D9CBB8222FB62C6004888B3 /* React.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 83CBBA2D1A601D0E00E9B192;
+			remoteInfo = React;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -140,7 +146,6 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				A9E850BE2306509100AA0CF3 /* XrClient.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -155,8 +160,8 @@
 		7D67192E22FB839700BED26C /* XrClientSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XrClientSession.m; path = src/XrClientSession.m; sourceTree = "<group>"; };
 		7D67192F22FB839700BED26C /* XrClientLocalization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = XrClientLocalization.swift; path = src/XrClientLocalization.swift; sourceTree = "<group>"; };
 		7D9CBB8222FB62C6004888B3 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
-		A9E850B823063FBA00AA0CF3 /* XrClient.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = XrClient.h; sourceTree = "<group>"; };
 		A9E850BB23064B6B00AA0CF3 /* XrClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = XrClient.m; path = src/XrClient.m; sourceTree = "<group>"; };
+		BC8036872317008000C2D199 /* XrClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XrClient.h; path = src/XrClient.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -187,7 +192,7 @@
 				7D67192F22FB839700BED26C /* XrClientLocalization.swift */,
 				7D67192E22FB839700BED26C /* XrClientSession.m */,
 				A9E850BB23064B6B00AA0CF3 /* XrClient.m */,
-				A9E850B823063FBA00AA0CF3 /* XrClient.h */,
+				BC8036872317008000C2D199 /* XrClient.h */,
 				7D67192D22FB839700BED26C /* XrClientSession.swift */,
 				7D67191A22FB839700BED26C /* RNXrClient-Bridging-Header.h */,
 				134814211AA4EA7D00B7C361 /* Products */,
@@ -233,7 +238,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A9E850B92306405600AA0CF3 /* XrClient.h in Headers */,
+				BC8036982317008000C2D199 /* XrClient.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -252,6 +257,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				BC80369B2317023700C2D199 /* PBXTargetDependency */,
 			);
 			name = RNXrClient;
 			productName = RCTDataManager;
@@ -428,6 +434,14 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		BC80369B2317023700C2D199 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = React;
+			targetProxy = BC80369A2317023700C2D199 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
 		58B511ED1A9E6C8500147676 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -523,7 +537,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(BUILT_PRODUCTS_DIR)/include",
 					"$(SRCROOT)/../../../React/**",
 					"$(SRCROOT)/../../react-native/React/**",
 					"$(SRCROOT)",
@@ -550,7 +564,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(BUILT_PRODUCTS_DIR)/include",
 					"$(SRCROOT)/../../../React/**",
 					"$(SRCROOT)/../../react-native/React/**",
 					"$(SRCROOT)",
