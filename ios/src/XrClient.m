@@ -12,8 +12,8 @@
 
 @implementation XrClient : NSObject
 
-+ (void)registerSession:(ARSession*)arSession {
-    [XrClientSession registerARSession:arSession];
++ (void)registerARSCNView:(ARSCNView*)arView {
+    [XrClientSession registerARSCNView:arView];
 }
 
 @end

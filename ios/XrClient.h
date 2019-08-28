@@ -6,10 +6,10 @@
 //  Copyright © 2019 Magic Leap. All rights reserved.
 //
 
-@class ARSession;
+@class ARSCNView;
 
 @interface XrClient : NSObject
 
-+ (void)registerSession:(ARSession*)session;
++ (void)registerARSCNView:(ARSCNView*)arView;
 
 @end
