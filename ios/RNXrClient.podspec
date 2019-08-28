@@ -19,8 +19,7 @@ Pod::Spec.new do |s|
 
   s.preserve_paths = 'README.md', 'package.json', 'index.js'
   s.source_files  = "src/*.{h,m,swift}"
-  
+  s.vendored_frameworks  = "external/MLXRInternal.framework"
   s.dependency "React"
-  #s.dependency "others"
 
 end
