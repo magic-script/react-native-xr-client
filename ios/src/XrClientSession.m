@@ -8,7 +8,6 @@
 
 #import <React/RCTBridgeModule.h>
 #import <MLXRInternal/MLXRInternal.h>
-#include "XrClient.h"
 
 @interface RCT_EXTERN_MODULE(XrClientSession, NSObject)
 

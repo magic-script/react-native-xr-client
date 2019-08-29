@@ -21,5 +21,6 @@ Pod::Spec.new do |s|
   s.source_files  = "src/*.{h,m,swift}"
   s.vendored_frameworks  = "external/MLXRInternal.framework"
   s.dependency "React"
+  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
 
 end
