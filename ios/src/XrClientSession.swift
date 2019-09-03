@@ -14,10 +14,11 @@ import MLXRInternal
 @objc(XrClientSession)
 class XrClientSession: NSObject {
 
-    static public weak var arSession: ARSession?
+    //static public weak var arSession: ARSession?
+    static public weak var arView: ARSCNView?
     static fileprivate let locationManager = CLLocationManager()
     fileprivate var xrClientSession: MLXRSession?
-    fileprivate let xrQueue = DispatchQueue(label: "xrQueue")
+    static fileprivate let xrQueue = DispatchQueue(label: "xrQueue")
     fileprivate var lastLocation: CLLocation?
     
     public override init() {
@@ -42,19 +43,27 @@ class XrClientSession: NSObject {
     }
 
     @objc
-    static public func registerARSession(_ arSession: ARSession) {
-        XrClientSession.arSession = arSession
+    static public func registerARSession(_ arSession: ARSCNView, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        XrClientSession.xrQueue.async {
+            XrClientSession.arView = arSession
+            if arSession != nil {
+            print("Registered XR ARSessionn\(arSession)")
+            } else {
+            print("XR ARView ARSession is nil")
+            }
+            resolve("success")
+        }
     }
 
     @objc
     public func connect(_ address: String, deviceId: String, token: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        xrQueue.async { [weak self] in
+        XrClientSession.xrQueue.async { [weak self] in
             guard let self = self else {
-                reject("code", "ARSession does not exist.", nil)
+                reject("code", "XrClientSession does not exist.", nil)
                 return
             }
             
-            guard let arSession = XrClientSession.arSession else {
+            guard let arSession = XrClientSession.arView?.session else {
                 reject("code", "ARSession does not exist.", nil)
                 return
             }
@@ -90,17 +99,17 @@ class XrClientSession: NSObject {
             return
         }
         
-        guard let frame = XrClientSession.arSession?.currentFrame else {
+        guard let frame = XrClientSession.arView?.session.currentFrame else {
             print("no ar frame available")
             return
         }
-        print("TrackingState:", XrClientSession.arSession?.currentFrame?.camera.trackingState ?? "Unknown");
+        print("TrackingState:", XrClientSession.arView?.session.currentFrame?.camera.trackingState ?? "Unknown");
         _ = xrSession.update(frame, currentLocation)
     }
     
     @objc
     public func getAllAnchors(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        xrQueue.async { [weak self] in
+        XrClientSession.xrQueue.async { [weak self] in
             guard let xrSession = self?.xrClientSession else {
                 reject("code", "XrClientSession has not been initialized!", nil)
                 return
@@ -109,9 +118,9 @@ class XrClientSession: NSObject {
             let uniqueAnchors: [XrClientAnchorData] = allAnchors.map { XrClientAnchorData($0) }
             
             // Remove current local anchors
-            if let currentAnchors = XrClientSession.arSession?.currentFrame?.anchors {
+            if let currentAnchors = XrClientSession.arView?.session.currentFrame?.anchors {
                 for anchor in currentAnchors {
-                    XrClientSession.arSession?.remove(anchor: anchor)
+                    XrClientSession.arView?.session.remove(anchor: anchor)
                 }
             }
             
@@ -122,7 +131,7 @@ class XrClientSession: NSObject {
                 if let pcfID = bv.getId(), let sdkAncror = xrSession.getAnchorByPcfId(pcfID), let bvMatrix = bv.getPose() {
                     let xrAnchor = XrClientAnchorData(sdkAncror);
                     let pose: simd_float4x4 = xrAnchor.getPose() * bvMatrix.pose;
-                    XrClientSession.arSession?.add(anchor: ARAnchor(name: xrAnchor.getAnchorId(), transform: pose))
+                    XrClientSession.arView?.session.add(anchor: ARAnchor(name: xrAnchor.getAnchorId(), transform: pose))
                 }
             }
             
@@ -133,7 +142,7 @@ class XrClientSession: NSObject {
     
     @objc
     public func getAnchorByPcfId(pcfId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        xrQueue.async { [weak self] in
+        XrClientSession.xrQueue.async { [weak self] in
             guard let self = self else {
                 reject("code", "Bad state", nil)
                 return
@@ -161,7 +170,7 @@ class XrClientSession: NSObject {
     
     @objc
     public func getLocalizationStatus(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        xrQueue.async { [weak self] in
+        XrClientSession.xrQueue.async { [weak self] in
             guard let self = self else {
                 reject("code", "Bad state", nil)
                 return
@@ -183,7 +192,7 @@ class XrClientSession: NSObject {
     
     @objc
     public func getAllBoundedVolumes(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        xrQueue.async { [weak self] in
+        XrClientSession.xrQueue.async { [weak self] in
             guard let self = self else {
                 reject("code", "Bad state", nil)
                 return
@@ -203,7 +212,7 @@ class XrClientSession: NSObject {
 // CLLocationManagerDelegate
 extension XrClientSession: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        xrQueue.async { [weak self] in
+        XrClientSession.xrQueue.async { [weak self] in
             if let self = self {
                 self.lastLocation = locations.last
             }

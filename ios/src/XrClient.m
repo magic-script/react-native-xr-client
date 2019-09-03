@@ -12,8 +12,8 @@
 
 @implementation XrClient : NSObject
 
-+ (void)registerSession:(ARSession*)arSession {
-    [XrClientSession registerARSession:arSession];
++ (void)registerSession:(ARSCNView*)arSession resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    [XrClientSession registerARSession:arSession resolve:resolve reject:reject];
 }
 
 @end

@@ -10,6 +10,6 @@
 
 @interface XrClient : NSObject
 
-+ (void)registerSession:(ARSession*)session;
++ (void)registerSession:(ARSCNView*)session resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
 
 @end
