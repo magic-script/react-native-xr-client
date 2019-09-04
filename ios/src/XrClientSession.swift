@@ -47,10 +47,16 @@ class XrClientSession: NSObject {
     }
 
     @objc
-    public func connect(_ address: String, deviceId: String, token: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    public func connect(_ gatewayAddress: String,
+                        pwAddress: String,
+                        deviceId: String,
+                        appId: String,
+                        token: String,
+                        resolve: @escaping RCTPromiseResolveBlock,
+                        reject: @escaping RCTPromiseRejectBlock) {
         xrQueue.async { [weak self] in
             guard let self = self else {
-                reject("code", "ARSession does not exist.", nil)
+                reject("code", "XrClientSession does not exist.", nil)
                 return
             }
             
@@ -59,9 +65,9 @@ class XrClientSession: NSObject {
                 return
             }
             
-            self.xrClientSession = MLXRSession(0, arSession)
+            self.xrClientSession = MLXRSession(token, arSession)
             if let xrSession = self.xrClientSession {
-                let result: Bool = xrSession.connect(address, deviceId, token)
+                let result: Bool = xrSession.connect(gatewayAddress, pwAddress, deviceId, appId, token)
                 if (arSession.delegate == nil) {
                     let worldOriginAnchor = ARAnchor(name: "WorldAnchor", transform: matrix_identity_float4x4)
                     arSession.add(anchor: worldOriginAnchor)
@@ -119,7 +125,7 @@ class XrClientSession: NSObject {
             print("getAllBoundedVolumes:" + String(bvs.count))
 
             for bv in bvs {
-                if let pcfID = bv.getId(), let sdkAncror = xrSession.getAnchorByPcfId(pcfID), let bvMatrix = bv.getPose() {
+                if let pcfID = bv.getId(), let sdkAncror = xrSession.getAnchorBy(pcfID), let bvMatrix = bv.getPose() {
                     let xrAnchor = XrClientAnchorData(sdkAncror);
                     let pose: simd_float4x4 = xrAnchor.getPose() * bvMatrix.pose;
                     XrClientSession.arSession?.add(anchor: ARAnchor(name: xrAnchor.getAnchorId(), transform: pose))
@@ -132,7 +138,7 @@ class XrClientSession: NSObject {
     }
     
     @objc
-    public func getAnchorByPcfId(pcfId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    public func getAnchorBy(_ pcfId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         xrQueue.async { [weak self] in
             guard let self = self else {
                 reject("code", "Bad state", nil)
@@ -148,7 +154,7 @@ class XrClientSession: NSObject {
                 return
             }
             
-            guard let anchorData = xrSession.getAnchorByPcfId(uuid) else {
+            guard let anchorData = xrSession.getAnchorBy(uuid) else {
                 // Achor data does not exist for given PCF id
                 resolve(nil)
                 return

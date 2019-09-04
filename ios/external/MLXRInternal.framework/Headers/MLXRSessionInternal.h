@@ -36,13 +36,53 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@protocol MLXRSessionDelegateInternal;
+
 @interface MLXRSession (MLXRSessionInternal)
+/// Connects to the local cloud server.
+///
+/// @param gatewayAddress Address of the MQTT server to connect to.
+/// @param pwAddress Address of the gRPC server to connect to.
+/// @param deviceId Device ID.
+/// @param appId Application instance ID.
+/// @param token Authentication token.
+///
+/// @return @c true if successfully connected, @c false otherwise.
+- (BOOL)connect:(NSString *)gatewayAddress :(NSString *)pwAddress :(NSString *)deviceId :(NSString *)appId :(NSString *) token;
+
 /// Gets all Bounded Volumes found in the scene.
 ///
 /// @sa @c MLXRBoundedVolume for the properties of each Bounded Volume.
 ///
 /// @return An array of Bounded Volumes found in the scene.
 - (NSArray<MLXRBoundedVolume *> *)getAllBoundedVolumes;
+
+/// A delegate to receive MLXRAnchor updates.
+@property (nonatomic, weak, nullable) id<MLXRSessionDelegateInternal> delegateInternal;
+
+@end
+
+/// Methods that can be called when MLXRAnchor and MLXRBoundedVolume objects are updated.
+@protocol MLXRSessionDelegateInternal <MLXRSessionDelegate>
+
+/// Called when MLXRBoundedVolume objects are added.
+/// @param session The MLXR client session.
+/// @param anchors The MLXRBoundedVolume objects that are added.
+@optional
+- (void)session:(MLXRSession *)session didAddBoundedVolumes:(NSArray<MLXRBoundedVolume *> *)boundedVolumes;
+
+/// Called when MLXRBoundedVolume objects are removed.
+/// @param session The MLXR client session.
+/// @param anchors The MLXRBoundedVolume objects that are removed.
+@optional
+- (void)session:(MLXRSession *)session didRemoveBoundedVolumes:(NSArray<MLXRBoundedVolume *> *)boundedVolumes;
+
+/// Called when MLXRBoundedVolume objects are updated.
+/// @param session The MLXR client session.
+/// @param anchors The MLXRBoundedVolume objects that are updated.
+@optional
+- (void)session:(MLXRSession *)session didUpdateBoundedVolumes:(NSArray<MLXRBoundedVolume *> *)boundedVolumes;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -39,7 +39,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol MLXRSessionDelegate;
-typedef struct sessionType * sessionType;
 
 /// Manages the client session for shared experience in the real world.
 @interface MLXRSession : NSObject
@@ -54,16 +53,24 @@ typedef struct sessionType * sessionType;
 /// @return The client session instance, or @c nil if the parameters are not valid.
 - (instancetype)initWith:(id)autoToken :(ARSession *)session;
 
-/// Connects to the local cloud server.
+/// Connects to the server.
 ///
-/// @param address Address of the server to connect to.
 /// @param deviceId Device ID.
+/// @param appId Application instance ID.
 /// @param token Authentication token.
 ///
 /// @return @c true if successfully connected, @c false otherwise.
-- (BOOL)connect:(NSString *)address :(NSString *)deviceId :(NSString *)token;
+- (BOOL)connect:(NSString *)deviceId :(NSString *)appId :(NSString *)token;
+
+/// Updates the authentication token.
+///
+/// @param token Authentication token.
+///
+/// @return @c true if successfully updated, @c false otherwise.
+- (BOOL)updateToken:(NSString *)token;
 
 /// Updates the camera frame along with the location information to localize into a shared map.
+/// Also checks tracking state to force relocalization.
 ///
 /// @param frame ARFrame object captured from the ARSession.
 /// @param location CLLocation object containing the geographical location .
@@ -85,7 +92,7 @@ typedef struct sessionType * sessionType;
 /// @param anchorId ID of the anchor.
 ///
 /// @return An anchor with the given ID, or @c nil if error occurs.
-- (MLXRAnchor * _Nullable)getAnchorByPcfId:(NSUUID *)anchorId;
+- (MLXRAnchor * _Nullable)getAnchorById:(NSUUID *)anchorId;
 
 /// Gets the localization result.
 ///
@@ -94,15 +101,10 @@ typedef struct sessionType * sessionType;
 /// @return Localiation status, or @c nil if error occurs.
 - (MLXRLocalizationResult * _Nullable)getLocalizationStatus;
 
-/// Forces the session to attempt a relocalization.
-///
-/// @return @c true if the attempt was successful, @c false otherwise.
-- (BOOL)forceRelocalization;
-
 /// A delegate to receive MLXRAnchor updates.
 @property (nonatomic, weak, nullable) id<MLXRSessionDelegate> delegate;
 
-@property (readonly) sessionType session_;
+@property (readonly) id session_;
 
 @end
 
