@@ -115,15 +115,8 @@ class XrClientSession: NSObject {
                 }
             }
             
-            let bvs = xrSession.getAllBoundedVolumes()
-            print("getAllBoundedVolumes:" + String(bvs.count))
-
-            for bv in bvs {
-                if let pcfID = bv.getId(), let sdkAncror = xrSession.getAnchorByPcfId(pcfID), let bvMatrix = bv.getPose() {
-                    let xrAnchor = XrClientAnchorData(sdkAncror);
-                    let pose: simd_float4x4 = xrAnchor.getPose() * bvMatrix.pose;
-                    XrClientSession.arSession?.add(anchor: ARAnchor(name: xrAnchor.getAnchorId(), transform: pose))
-                }
+            for anchor in uniqueAnchors {
+                XrClientSession.arSession?.add(anchor: ARAnchor(name: anchor.getAnchorId(), transform: anchor.getPose()))
             }
             
             let results: [[String: Any]] = uniqueAnchors.map { $0.getJsonRepresentation() }

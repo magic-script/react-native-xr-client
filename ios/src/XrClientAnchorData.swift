@@ -48,7 +48,7 @@ class XrClientAnchorData: NSObject {
     }
 
     public func getPose() -> simd_float4x4 {
-        return anchorData.getPose()?.pose ?? matrix_identity_float4x4
+        return normalizePoseForStandardUpVector(anchorData.getPose()?.pose ?? matrix_identity_float4x4)
     }
 
     public func getAnchorId() -> String {
@@ -62,5 +62,17 @@ class XrClientAnchorData: NSObject {
             "pose": getFlatPose(),
             "anchorId": getAnchorId()
         ]
+    }
+}
+
+extension XrClientAnchorData {
+    // Zero out the pitch and roll for the magic pose
+    fileprivate func normalizePoseForStandardUpVector(_ pose: simd_float4x4) -> simd_float4x4 {
+        let forward: simd_float4 = pose[2]
+        let at: simd_float3 = simd_normalize(simd_float3(forward[0], 0, forward[2]))
+        let up: simd_float3 = simd_float3(0, 1, 0)
+        let right: simd_float3 = simd_normalize(simd_cross(up, at))
+        let position: simd_float4 = pose[3]
+        return simd_float4x4(columns: (simd_make_float4(at), simd_make_float4(up), simd_make_float4(right), position))
     }
 }
