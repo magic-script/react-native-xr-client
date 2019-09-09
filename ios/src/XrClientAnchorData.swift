@@ -63,4 +63,11 @@ class XrClientAnchorData: NSObject {
             "anchorId": getAnchorId()
         ]
     }
+    
+    public static func mat4FromFlatArray(_ flat: [Float]) -> simd_float4x4? {
+        if (flat.count != 16) {
+            return nil
+        }
+        return simd_float4x4(simd_float4(flat[0..<4]), simd_float4(flat[4..<8]), simd_float4(flat[8..<12]), simd_float4(flat[12..<16]))
+    }
 }

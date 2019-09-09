@@ -56,12 +56,12 @@ class XrClientSession: NSObject {
                         reject: @escaping RCTPromiseRejectBlock) {
         xrQueue.async { [weak self] in
             guard let self = self else {
-                reject("code", "XrClientSession does not exist.", nil)
+                reject("code", "XrClientSession does not exist", nil)
                 return
             }
             
             guard let arSession = XrClientSession.arSession else {
-                reject("code", "ARSession does not exist.", nil)
+                reject("code", "ARSession does not exist", nil)
                 return
             }
             
@@ -105,43 +105,22 @@ class XrClientSession: NSObject {
     }
     
     @objc
-    public func getAllAnchors(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    public func getAllPCFs(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         xrQueue.async { [weak self] in
             guard let xrSession = self?.xrClientSession else {
                 reject("code", "XrClientSession has not been initialized!", nil)
                 return
             }
-            let allAnchors: [MLXRAnchor] = xrSession.getAllAnchors()
-            let uniqueAnchors: [XrClientAnchorData] = allAnchors.map { XrClientAnchorData($0) }
-            
-            // Remove current local anchors
-            if let currentAnchors = XrClientSession.arSession?.currentFrame?.anchors {
-                for anchor in currentAnchors {
-                    XrClientSession.arSession?.remove(anchor: anchor)
-                }
-            }
-            
-            let bvs = xrSession.getAllBoundedVolumes()
-            print("getAllBoundedVolumes:" + String(bvs.count))
-
-            for bv in bvs {
-                if let pcfID = bv.getId(), let sdkAncror = xrSession.getAnchorBy(pcfID), let bvMatrix = bv.getPose() {
-                    let xrAnchor = XrClientAnchorData(sdkAncror);
-                    let pose: simd_float4x4 = xrAnchor.getPose() * bvMatrix.pose;
-                    XrClientSession.arSession?.add(anchor: ARAnchor(name: xrAnchor.getAnchorId(), transform: pose))
-                }
-            }
-            
-            let results: [[String: Any]] = uniqueAnchors.map { $0.getJsonRepresentation() }
+            let results: [[String: Any]] = xrSession.getAllAnchors().map { XrClientAnchorData($0) }.map { $0.getJsonRepresentation() }
             resolve(results)
         }
     }
     
     @objc
-    public func getAnchorBy(_ pcfId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    public func getPCFById(_ pcfId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         xrQueue.async { [weak self] in
             guard let self = self else {
-                reject("code", "Bad state", nil)
+                reject("code", "XrClientSession does not exist", nil)
                 return
             }
             guard let uuid = UUID(uuidString: pcfId) else {
@@ -169,7 +148,7 @@ class XrClientSession: NSObject {
     public func getLocalizationStatus(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         xrQueue.async { [weak self] in
             guard let self = self else {
-                reject("code", "Bad state", nil)
+                reject("code", "XrClientSession does not exist", nil)
                 return
             }
             guard let xrSession = self.xrClientSession else {
@@ -191,7 +170,7 @@ class XrClientSession: NSObject {
     public func getAllBoundedVolumes(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         xrQueue.async { [weak self] in
             guard let self = self else {
-                reject("code", "Bad state", nil)
+                reject("code", "XrClientSession does not exist", nil)
                 return
             }
             guard let xrSession = self.xrClientSession else {
@@ -203,6 +182,48 @@ class XrClientSession: NSObject {
             resolve(uniqueVolumes)
         }
         
+    }
+    
+    @objc
+    public func createAnchor(_ anchorId: String, position: NSArray, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        xrQueue.async {
+            guard let arSession = XrClientSession.arSession else {
+                reject("code", "ARSession has not been initialized!", nil)
+                return
+            }
+            if let position = position as? [Float], let mat4 = XrClientAnchorData.mat4FromFlatArray(position) {
+                arSession.add(anchor: ARAnchor(name: anchorId, transform: mat4))
+                resolve("success")
+            } else {
+                reject("code", "position should be a flat float array", nil)
+            }
+        }
+    }
+    
+    @objc
+    public func removeAnchor(_ anchorId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        xrQueue.async {
+            if let anchors = XrClientSession.arSession?.currentFrame?.anchors {
+                for anchor in anchors {
+                    if let name = anchor.name, name == anchorId {
+                        XrClientSession.arSession?.remove(anchor: anchor)
+                    }
+                }
+            }
+        }
+        resolve("success")
+    }
+    
+    @objc
+    public func removeAllAnchors(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        xrQueue.async {
+            if let anchors = XrClientSession.arSession?.currentFrame?.anchors {
+                for anchor in anchors {
+                    XrClientSession.arSession?.remove(anchor: anchor)
+                }
+            }
+            resolve("success")
+        }
     }
 }
 
