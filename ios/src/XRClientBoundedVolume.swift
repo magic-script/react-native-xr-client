@@ -45,8 +45,20 @@ class XrClientBoundedVolume: NSObject {
         return boundedVolume.getPose()?.pose ?? matrix_identity_float4x4
     }
     
-    public func getProperties() -> [String:Data] {
-        return boundedVolume.getProperties()
+    public func getProperties() -> [String:String] {
+        var results: [String:String] = [:]
+        let properties = boundedVolume.getProperties()
+        for (key, value) in properties {
+            if (key.starts(with: "magicverse_")) {
+                results[key] = String(data: value, encoding: .utf8)
+            } else if (key == "package_owner") { // FIXME: this is temporary
+                if let start = value.lastIndex(of: 0) {
+                    let subValue = value.subdata(in: (start+1)..<value.count)
+                    results[key] = String(data: subValue, encoding: .utf8)
+                }
+            }
+        }
+        return results;
     }
     
     @objc public func getJsonRepresentation() -> [String: Any] {
