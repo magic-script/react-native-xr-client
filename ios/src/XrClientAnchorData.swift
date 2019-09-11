@@ -71,7 +71,7 @@ extension XrClientAnchorData {
         let forward: simd_float4 = pose[2]
         let at: simd_float3 = simd_normalize(simd_float3(forward[0], 0, forward[2]))
         let up: simd_float3 = simd_float3(0, 1, 0)
-        let right: simd_float3 = simd_normalize(simd_cross(up, at))
+        let right: simd_float3 = simd_normalize(simd_reflect(at, up))
         let position: simd_float4 = pose[3]
         return simd_float4x4(columns: (simd_make_float4(at), simd_make_float4(up), simd_make_float4(right), position))
     }
