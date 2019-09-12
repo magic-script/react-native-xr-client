@@ -64,10 +64,13 @@ class XrClientAnchorData: NSObject {
         ]
     }
     
-    public static func mat4FromFlatArray(_ flat: [Float]) -> simd_float4x4? {
+    public static func mat4FromColumnMajorFlatArray(_ flat: [Float]) -> simd_float4x4? {
         if (flat.count != 16) {
             return nil
         }
-        return simd_float4x4(simd_float4(flat[0..<4]), simd_float4(flat[4..<8]), simd_float4(flat[8..<12]), simd_float4(flat[12..<16]))
+        return simd_float4x4(simd_float4(flat[0], flat[4], flat[8], flat[12]),
+                             simd_float4(flat[1], flat[5], flat[9], flat[13]),
+                             simd_float4(flat[2], flat[6], flat[10], flat[14]),
+                             simd_float4(flat[3], flat[7], flat[11], flat[15]))
     }
 }

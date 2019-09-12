@@ -191,7 +191,7 @@ class XrClientSession: NSObject {
                 reject("code", "ARSession has not been initialized!", nil)
                 return
             }
-            if let position = position as? [Float], let mat4 = XrClientAnchorData.mat4FromFlatArray(position) {
+            if let position = position as? [Float], let mat4 = XrClientAnchorData.mat4FromColumnMajorFlatArray(position) {
                 arSession.add(anchor: ARAnchor(name: anchorId, transform: mat4))
                 resolve("success")
             } else {
