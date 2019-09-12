@@ -191,11 +191,17 @@ class XrClientSession: NSObject {
                 reject("code", "ARSession has not been initialized!", nil)
                 return
             }
-            if let position = position as? [NSNumber], let mat4 = XrClientAnchorData.mat4FromColumnMajorFlatArray(position.map{$0.floatValue}) {
-                arSession.add(anchor: ARAnchor(name: anchorId, transform: mat4))
+            var transform: simd_float4x4?
+            if let position = position as? [NSNumber] {
+                transform = XrClientAnchorData.mat4FromColumnMajorFlatArray(position.map{$0.floatValue})
+            } else if let position = position as? [Float] {
+                transform = XrClientAnchorData.mat4FromColumnMajorFlatArray(position)
+            }
+            if let transform = transform {
+                arSession.add(anchor: ARAnchor(name: anchorId, transform: transform))
                 resolve("success")
             } else {
-                reject("code", "position should be a flat float array of 16 elements", nil)
+                reject("code", "position should be a array of 16 float elements", nil)
             }
         }
     }
