@@ -19,6 +19,7 @@ class XrClientSession: NSObject {
     fileprivate var xrClientSession: MLXRSession?
     fileprivate let xrQueue = DispatchQueue(label: "xrQueue")
     fileprivate var lastLocation: CLLocation?
+    fileprivate var trackingState: ARCamera.TrackingState?
     
     public override init() {
         super.init()
@@ -78,7 +79,7 @@ class XrClientSession: NSObject {
     public func setUpdateInterval(_ interval: TimeInterval, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         resolve(true)
     }
-    
+
     fileprivate func update() {
         guard let xrSession = xrClientSession else {
             print("no mlxr session avaiable")
@@ -94,10 +95,18 @@ class XrClientSession: NSObject {
             print("no ar frame available")
             return
         }
-        print("TrackingState:", XrClientSession.arSession?.currentFrame?.camera.trackingState ?? "Unknown");
+
+        if let previuosTrackingState = trackingState,
+            let currentTrackingState = XrClientSession.arSession?.currentFrame?.camera.trackingState,
+            previuosTrackingState != currentTrackingState {
+            print("TrackingState: ", currentTrackingState.description);
+        }
+        
+        trackingState = XrClientSession.arSession?.currentFrame?.camera.trackingState
+
         _ = xrSession.update(frame, currentLocation)
     }
-    
+
     @objc
     public func getAllAnchors(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         xrQueue.async { [weak self] in
@@ -214,5 +223,46 @@ extension XrClientSession: CLLocationManagerDelegate {
 extension XrClientSession: ARSessionDelegate {
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         self.update();
+    }
+}
+
+extension ARCamera.TrackingState {
+    var description: String {
+        switch self {
+        case .notAvailable:
+            return "UNAVAILABLE"
+        case .normal:
+            return "NORMAL"
+        case .limited(let reason):
+            switch reason {
+            case .excessiveMotion:
+                return "LIMITED: Too much camera movement"
+            case .insufficientFeatures:
+                return "LIMITED: Not enough surface detail"
+            case .initializing:
+                return "LIMITED: Initializing"
+            case .relocalizing:
+                return "LIMITED: Relocalizing"
+            @unknown default:
+                return "LIMITED: Unknown reason"
+            }
+        }
+    }
+
+    static func == (left: ARCamera.TrackingState, right: ARCamera.TrackingState) -> Bool {
+        switch (left, right) {
+        case (.notAvailable, .notAvailable):
+            return true
+        case (.normal, .normal):
+            return true
+        case let (.limited(a), .limited(b)):
+            return a == b
+        default:
+            return false
+        }
+    }
+    
+    static func != (left: ARCamera.TrackingState, right: ARCamera.TrackingState) -> Bool {
+        return !(left == right)
     }
 }
