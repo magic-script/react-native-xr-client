@@ -9,7 +9,7 @@
 import Foundation
 import ARKit
 import CoreLocation
-import MLXRInternal
+import MLXR
 
 @objc(XrClientSession)
 class XrClientSession: NSObject {

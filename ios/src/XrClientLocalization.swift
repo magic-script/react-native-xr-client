@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import MLXRInternal
+import MLXR
 
 @objc enum XrClientLocalization : Int {
     case awaitingLocation

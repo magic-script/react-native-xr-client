@@ -8,7 +8,7 @@
 
 import Foundation
 import SceneKit
-import MLXRInternal
+import MLXR
 
 class XrClientAnchorData: NSObject {
     fileprivate let anchorData: MLXRAnchor!

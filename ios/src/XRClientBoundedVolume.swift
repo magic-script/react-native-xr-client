@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import MLXRInternal
+import MLXR
 
 class XrClientBoundedVolume: NSObject {
     fileprivate let boundedVolume: MLXRBoundedVolume!
