@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <RNXrClient-Swift.h>
+// #import <RNXrClient-Swift.h>
 #import "XrClient.h"
 
 @implementation XrClient : NSObject

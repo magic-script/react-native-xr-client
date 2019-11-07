@@ -19,8 +19,8 @@ Pod::Spec.new do |s|
 
   s.preserve_paths = 'README.md', 'package.json', 'index.js'
   s.source_files  = ["**/*.{h,m,swift}"]
-  # s.vendored_frameworks  = "MXR.framework"
-  s.framework  = "MLXR"
+  s.vendored_frameworks  = "MLXR"
+  # s.framework  = "MLXR"
   s.dependency "React"
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
 
