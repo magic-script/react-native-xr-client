@@ -17,13 +17,13 @@ class XrClientAnchorData: NSObject {
         self.anchorData = anchorData
     }
 
-    public func getState() -> String {
-        if let state = anchorData.getState(), state.tracked {
-            return "tracked"
-        } else {
-            return "notTracked"
-        }
-    }
+//    public func getState() -> String {
+//        if let state = anchorData.getState(), state.tracked {
+//            return "tracked"
+//        } else {
+//            return "notTracked"
+//        }
+//    }
 
     public func getConfidence() -> [String: Any] {
         guard let confidence = anchorData.getConfidence() else {
