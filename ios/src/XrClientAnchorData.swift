@@ -57,7 +57,6 @@ class XrClientAnchorData: NSObject {
 
     @objc public func getJsonRepresentation() -> [String: Any] {
         return [
-            "state": getState(),
             "confidence": getConfidence(),
             "pose": getFlatPose(),
             "anchorId": getAnchorId()

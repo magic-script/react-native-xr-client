@@ -48,13 +48,7 @@ class XrClientSession: NSObject {
     }
 
     @objc
-    public func connect(_ gatewayAddress: String,
-                        pwAddress: String,
-                        deviceId: String,
-                        appId: String,
-                        token: String,
-                        resolve: @escaping RCTPromiseResolveBlock,
-                        reject: @escaping RCTPromiseRejectBlock) {
+    public func connect(_ token: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         xrQueue.async { [weak self] in
             guard let self = self else {
                 reject("code", "XrClientSession does not exist", nil)
@@ -68,13 +62,12 @@ class XrClientSession: NSObject {
             
             self.xrClientSession = MLXRSession(token, arSession)
             if let xrSession = self.xrClientSession {
-                let result: Bool = xrSession.connect(gatewayAddress, pwAddress, deviceId, appId, token)
                 if (arSession.delegate == nil) {
                     let worldOriginAnchor = ARAnchor(name: "WorldAnchor", transform: matrix_identity_float4x4)
                     arSession.add(anchor: worldOriginAnchor)
                     arSession.delegate = self;
                 }
-                resolve(result)
+                resolve(xrSession.getStatus())
             } else {
                 reject("code", "XrClientSession has not been initialized!", nil)
             }
@@ -126,34 +119,6 @@ class XrClientSession: NSObject {
     }
     
     @objc
-    public func getPCFById(_ pcfId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        xrQueue.async { [weak self] in
-            guard let self = self else {
-                reject("code", "XrClientSession does not exist", nil)
-                return
-            }
-            guard let uuid = UUID(uuidString: pcfId) else {
-                reject("code", "Incorrect PCF id", nil)
-                return
-            }
-            
-            guard let xrSession = self.xrClientSession else {
-                reject("code", "XrClientSession has not been initialized!", nil)
-                return
-            }
-            
-            guard let anchorData = xrSession.getAnchorBy(uuid) else {
-                // Achor data does not exist for given PCF id
-                resolve(nil)
-                return
-            }
-            
-            let result: [String : Any] = XrClientAnchorData(anchorData).getJsonRepresentation()
-            resolve(result)
-        }
-    }
-    
-    @objc
     public func getLocalizationStatus(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         xrQueue.async { [weak self] in
             guard let self = self else {
@@ -173,24 +138,6 @@ class XrClientSession: NSObject {
     @objc
     static func requiresMainQueueSetup() -> Bool {
         return true
-    }
-    
-    @objc
-    public func getAllBoundedVolumes(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        xrQueue.async { [weak self] in
-            guard let self = self else {
-                reject("code", "XrClientSession does not exist", nil)
-                return
-            }
-            guard let xrSession = self.xrClientSession else {
-                reject("code", "XrClientSession has not been initialized!", nil)
-                return
-            }
-            let volumes = xrSession.getAllBoundedVolumes()
-            let uniqueVolumes: [[String:Any]] = volumes.map { XrClientBoundedVolume($0).getJsonRepresentation() }
-            resolve(uniqueVolumes)
-        }
-        
     }
     
     @objc
