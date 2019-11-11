@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		7D67193022FB839700BED26C /* XrClientAnchorData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D67192B22FB839700BED26C /* XrClientAnchorData.swift */; };
-		7D67193122FB839700BED26C /* XRClientBoundedVolume.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D67192C22FB839700BED26C /* XRClientBoundedVolume.swift */; };
 		7D67193222FB839700BED26C /* XrClientSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D67192D22FB839700BED26C /* XrClientSession.swift */; };
 		7D67193322FB839700BED26C /* XrClientSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D67192E22FB839700BED26C /* XrClientSession.m */; };
 		7D67193422FB839700BED26C /* XrClientLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D67192F22FB839700BED26C /* XrClientLocalization.swift */; };
@@ -157,7 +156,6 @@
 		134814201AA4EA6300B7C361 /* libRNXrClient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNXrClient.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D67191A22FB839700BED26C /* RNXrClient-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "RNXrClient-Bridging-Header.h"; path = "src/RNXrClient-Bridging-Header.h"; sourceTree = "<group>"; };
 		7D67192B22FB839700BED26C /* XrClientAnchorData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = XrClientAnchorData.swift; path = src/XrClientAnchorData.swift; sourceTree = "<group>"; };
-		7D67192C22FB839700BED26C /* XRClientBoundedVolume.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = XRClientBoundedVolume.swift; path = src/XRClientBoundedVolume.swift; sourceTree = "<group>"; };
 		7D67192D22FB839700BED26C /* XrClientSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = XrClientSession.swift; path = src/XrClientSession.swift; sourceTree = "<group>"; };
 		7D67192E22FB839700BED26C /* XrClientSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XrClientSession.m; path = src/XrClientSession.m; sourceTree = "<group>"; };
 		7D67192F22FB839700BED26C /* XrClientLocalization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = XrClientLocalization.swift; path = src/XrClientLocalization.swift; sourceTree = "<group>"; };
@@ -190,7 +188,6 @@
 			isa = PBXGroup;
 			children = (
 				7D67192B22FB839700BED26C /* XrClientAnchorData.swift */,
-				7D67192C22FB839700BED26C /* XRClientBoundedVolume.swift */,
 				7D67192F22FB839700BED26C /* XrClientLocalization.swift */,
 				7D67192E22FB839700BED26C /* XrClientSession.m */,
 				A9E850BB23064B6B00AA0CF3 /* XrClient.m */,
@@ -429,7 +426,6 @@
 				7D67193422FB839700BED26C /* XrClientLocalization.swift in Sources */,
 				7D67193222FB839700BED26C /* XrClientSession.swift in Sources */,
 				7D67193322FB839700BED26C /* XrClientSession.m in Sources */,
-				7D67193122FB839700BED26C /* XRClientBoundedVolume.swift in Sources */,
 				7D67193022FB839700BED26C /* XrClientAnchorData.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
