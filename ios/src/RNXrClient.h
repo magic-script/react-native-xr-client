@@ -14,8 +14,11 @@
 //  limitations under the License.
 //
 
-//
-//  Use this file to import your target's public headers that you would like to expose to Swift.
-//
+#import <Foundation/Foundation.h>
+@class ARSession;
 
-#import <React/RCTBridgeModule.h>
+@interface RNXrClient : NSObject
+
++ (void)registerSession:(ARSession *)session;
+
+@end

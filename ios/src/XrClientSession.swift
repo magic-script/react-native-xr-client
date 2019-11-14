@@ -11,21 +11,22 @@ import ARKit
 import CoreLocation
 import MLXR
 
-@objc(XrClientSession)
-class XrClientSession: NSObject {
+@objc
+public class XrClientSession: NSObject {
 
+    @objc public static let instance = XrClientSession()
     static public weak var arSession: ARSession?
     static fileprivate let locationManager = CLLocationManager()
     fileprivate var xrClientSession: MLXRSession?
     fileprivate let xrQueue = DispatchQueue(label: "xrQueue")
     fileprivate var lastLocation: CLLocation?
     fileprivate var trackingState: ARCamera.TrackingState?
-    
+
     public override init() {
         super.init()
         setupLocationManager()
     }
-    
+
     deinit {
         // NOTE: Due to the following warning:
         // "Failure to deallocate CLLocationManager on the same runloop as its creation
@@ -34,7 +35,7 @@ class XrClientSession: NSObject {
         XrClientSession.locationManager.stopUpdatingLocation()
         XrClientSession.locationManager.delegate = nil
     }
-    
+
     fileprivate func setupLocationManager() {
         XrClientSession.locationManager.delegate = self
         XrClientSession.locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -54,12 +55,12 @@ class XrClientSession: NSObject {
                 reject("code", "XrClientSession does not exist", nil)
                 return
             }
-            
+
             guard let arSession = XrClientSession.arSession else {
                 reject("code", "ARSession does not exist", nil)
                 return
             }
-            
+
             self.xrClientSession = MLXRSession(token, arSession)
             if let xrSession = self.xrClientSession {
                 if (arSession.delegate == nil) {
@@ -73,7 +74,7 @@ class XrClientSession: NSObject {
             }
         }
     }
-    
+
     @objc
     public func setUpdateInterval(_ interval: TimeInterval, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         resolve(true)
@@ -84,12 +85,12 @@ class XrClientSession: NSObject {
             print("no mlxr session avaiable")
             return
         }
-        
+
         guard let currentLocation = lastLocation else {
             print("current location is not available")
             return
         }
-        
+
         guard let frame = XrClientSession.arSession?.currentFrame else {
             print("no ar frame available")
             return
@@ -100,7 +101,7 @@ class XrClientSession: NSObject {
             previuosTrackingState != currentTrackingState {
             print("TrackingState: ", currentTrackingState.description);
         }
-        
+
         trackingState = XrClientSession.arSession?.currentFrame?.camera.trackingState
 
         _ = xrSession.update(frame, currentLocation)
@@ -117,7 +118,7 @@ class XrClientSession: NSObject {
             resolve(results)
         }
     }
-    
+
     @objc
     public func getLocalizationStatus(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         xrQueue.async { [weak self] in
@@ -129,17 +130,17 @@ class XrClientSession: NSObject {
                 reject("code", "XrClientSession has not been initialized!", nil)
                 return
             }
-            
+
             let status: XrClientLocalization = XrClientLocalization(localizationStatus: xrSession.getLocalizationStatus()?.status ?? MLXRLocalizationStatus_LocalizationFailed)
             resolve(status.rawValue)
         }
     }
-    
+
     @objc
     static func requiresMainQueueSetup() -> Bool {
         return true
     }
-    
+
     @objc
     public func createAnchor(_ anchorId: String, position: NSArray, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         xrQueue.async {
@@ -161,7 +162,7 @@ class XrClientSession: NSObject {
             }
         }
     }
-    
+
     @objc
     public func removeAnchor(_ anchorId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         xrQueue.async {
@@ -172,10 +173,10 @@ class XrClientSession: NSObject {
                     }
                 }
             }
+            resolve("success")
         }
-        resolve("success")
     }
-    
+
     @objc
     public func removeAllAnchors(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         xrQueue.async {
@@ -191,7 +192,7 @@ class XrClientSession: NSObject {
 
 // CLLocationManagerDelegate
 extension XrClientSession: CLLocationManagerDelegate {
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         xrQueue.async { [weak self] in
             if let self = self {
                 self.lastLocation = locations.last
@@ -201,7 +202,7 @@ extension XrClientSession: CLLocationManagerDelegate {
 }
 
 extension XrClientSession: ARSessionDelegate {
-    func session(_ session: ARSession, didUpdate frame: ARFrame) {
+    public func session(_ session: ARSession, didUpdate frame: ARFrame) {
         self.update();
     }
 }
@@ -241,7 +242,7 @@ extension ARCamera.TrackingState {
             return false
         }
     }
-    
+
     static func != (left: ARCamera.TrackingState, right: ARCamera.TrackingState) -> Bool {
         return !(left == right)
     }
