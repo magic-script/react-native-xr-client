@@ -1,6 +1,0 @@
-framework module MLXRInternal {
-  umbrella header "MLXRInternal.h"
-
-  export *
-  module * { export * }
-}
