@@ -1,6 +1,5 @@
-//
 import { NativeModules } from "react-native";
 
-const { XrClientSession } = NativeModules;
+const { XrClientBridge } = NativeModules;
 
-export default XrClientSession;
+export default XrClientBridge;

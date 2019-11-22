@@ -1,4 +1,3 @@
-
 require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, '../package.json')))
@@ -18,8 +17,8 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.preserve_paths = 'README.md', 'package.json', 'index.js'
-  s.source_files  = "src/*.{h,m,swift}"
-  s.vendored_frameworks  = "external/MLXRInternal.framework"
+  s.source_files  = ["src/*.{h,m,swift}"]
+  s.framework  = "MLXR"
   s.dependency "React"
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
 
