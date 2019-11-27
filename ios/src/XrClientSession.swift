@@ -9,7 +9,7 @@
 import Foundation
 import ARKit
 import CoreLocation
-import MLXR
+import MLXRInternal
 
 @objc
 public class XrClientSession: NSObject {
@@ -61,7 +61,8 @@ public class XrClientSession: NSObject {
                 return
             }
 
-            self.xrClientSession = MLXRSession(token, arSession)
+            // MLXRSession(gatewayAddress, pwAddress, deviceId, token, session);
+            self.xrClientSession = MLXRSession("ssl://xr-dcg.mglp.net:443", "xr-pwg.mglp.net:443", "", token, arSession)
             if let xrSession = self.xrClientSession {
                 if (arSession.delegate == nil) {
                     let worldOriginAnchor = ARAnchor(name: "WorldAnchor", transform: matrix_identity_float4x4)
@@ -119,6 +120,20 @@ public class XrClientSession: NSObject {
         }
     }
 
+    @objc
+    public func getAllBoundedVolumes(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        xrQueue.async { [weak self] in
+            guard let xrSession = self?.xrClientSession else {
+                reject("code", "XrClientSession has not been initialized!", nil)
+                return
+            }
+            let volumes = xrSession.getAllBoundedVolumes()
+            let uniqueVolumes: [[String:Any]] = volumes.map { XrClientBoundedVolume($0).getJsonRepresentation() }
+            resolve(uniqueVolumes)
+        }
+        
+    }
+    
     @objc
     public func getLocalizationStatus(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         xrQueue.async { [weak self] in

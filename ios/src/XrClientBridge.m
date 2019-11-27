@@ -47,6 +47,10 @@ RCT_EXPORT_METHOD(getAllPCFs:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseR
     [XrClientSession.instance getAllPCFs:resolve reject:reject];
 }
 
+RCT_EXPORT_METHOD(getAllBoundedVolumes:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    [XrClientSession.instance getAllBoundedVolumes:resolve reject:reject];
+}
+
 RCT_EXPORT_METHOD(getLocalizationStatus:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
     [XrClientSession.instance getLocalizationStatus:resolve reject:reject];
 }
