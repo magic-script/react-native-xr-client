@@ -16,7 +16,7 @@
     "magic-script"
   ],
   "author": "Magic Leap",
-  "license": "",
+  "license": "Apache-2.0",
   "devDependencies": {
     "react-native": "^0.60.4"
   },

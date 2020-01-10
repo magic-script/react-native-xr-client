@@ -1,3 +1,4 @@
+[![License](https://img.shields.io/:license-Apache%202.0-blue.svg)](LICENSE)
 
 # React Native XR Client
 
