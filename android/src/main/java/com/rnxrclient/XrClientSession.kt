@@ -15,7 +15,6 @@ import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.ux.ArFragment
 import com.magicleap.xrkit.MLXRAnchor
 import com.magicleap.xrkit.MLXRSession
-import com.magicleap.xrkit.MLXRSessionEx
 import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
 import java.util.*
@@ -27,7 +26,7 @@ class XrClientSession {
     private val TAG: String = "XRKit"
 
     private lateinit var arFragment: ArFragment
-    private lateinit var mlxrSession: MLXRSessionEx
+    private lateinit var mlxrSession: MLXRSession
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private val anchorIds: MutableSet<String> = mutableSetOf()
@@ -64,7 +63,7 @@ class XrClientSession {
     }
 
     private fun startArSession(activity: AppCompatActivity) {
-        mlxrSession = MLXRSessionEx(activity)
+        mlxrSession = MLXRSession(activity)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity)
         arFragment = activity.supportFragmentManager.findFragmentByTag("arFragment") as ArFragment
 
@@ -92,19 +91,11 @@ class XrClientSession {
     }
 
     private fun startMlxrSession(token: String) {
-        // Staging
-        val gatewayAddress = "ssl://dcg.staging.mglp.net:443"
-        val pwAddress = "pwg.staging.mglp.net:443"
-        val deviceId = ""
-
-        mlxrSession.configure(gatewayAddress, pwAddress, deviceId)
-        Log.i(TAG, "mlxrSession.configure($gatewayAddress, $pwAddress, $deviceId)")
         mlxrSession.setToken(token)
         mlxrSession.start()
         mlxrSession.setOnAnchorUpdateListener(object : MLXRSession.OnAnchorUpdateListener {
             @Synchronized
             override fun onAdd(added: List<MLXRAnchor>) {
-                Log.i(TAG, "anchor added event called")
                 for (anchor in added) {
                     addAnchorEvents(AnchorEventData(AnchorEventType.ADDED, anchor))
                 }
@@ -112,7 +103,6 @@ class XrClientSession {
 
             @Synchronized
             override fun onUpdate(updated: List<MLXRAnchor>) {
-                Log.i(TAG, "anchor updated event called")
                 for (anchor in updated) {
                     addAnchorEvents(AnchorEventData(AnchorEventType.UPDATED, anchor))
                 }
@@ -120,7 +110,6 @@ class XrClientSession {
 
             @Synchronized
             override fun onRemove(removed: List<MLXRAnchor>) {
-                Log.i(TAG, "anchor removed event called")
                 for (anchor in removed) {
                     addAnchorEvents(AnchorEventData(AnchorEventType.REMOVED, anchor))
                 }
@@ -133,7 +122,6 @@ class XrClientSession {
         if (currentConnectionStatus != conStatus) {
             currentConnectionStatus = conStatus
             val conStatusString = currentConnectionStatus.statusString
-            Log.i(TAG, conStatusString)
             conStatusText?.let { it.text = conStatusString }
         }
     }
@@ -143,7 +131,6 @@ class XrClientSession {
         if (currentLocStatus != locStatus) {
             currentLocStatus = locStatus
             val locStatusString = locStatus.statusString
-            Log.i(TAG, locStatusString)
             locStatusText?.let { it.text = locStatusString }
         }
     }
