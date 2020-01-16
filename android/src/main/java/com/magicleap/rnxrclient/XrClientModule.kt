@@ -1,4 +1,4 @@
-package com.rnxrclient
+package com.magicleap.rnxrclient
 
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.*

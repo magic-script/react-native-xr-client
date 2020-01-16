@@ -1,4 +1,4 @@
-package com.rnxrclient
+package com.magicleap.rnxrclient
 
 import android.location.Location
 import android.util.Log
