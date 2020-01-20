@@ -90,7 +90,7 @@ class XrClientModule(private val reactContext: ReactApplicationContext) : ReactC
     fun removeAllAnchors(promise: Promise) {
         try {
             xrClientSession.removeAllAnchors()
-            promise.resolve("removeAllAnchors resolved")
+            promise.resolve("success")
         } catch (throwable: Throwable) {
             promise.reject(throwable)
         }
