@@ -485,7 +485,12 @@ org.gradle.jvmargs=-Xmx1536m
     ]
     ```
 
-    2. Add dependencies:
+    2. Update ABI types under `splits / abi` (ARKit.aar is only built for arb64-v8a at the moment):
+    ```groovy
+    include "arm64-v8a"
+    ```
+
+    3. Add dependencies:
     ```groovy
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
@@ -499,7 +504,7 @@ org.gradle.jvmargs=-Xmx1536m
     implementation 'com.google.android.gms:play-services-location:17.0.0'
     ```
 
-    3. Add kotlin plugins:
+    4. Add kotlin plugins:
     ```groovy
     apply plugin: 'kotlin-android'
     apply plugin: 'kotlin-android-extensions'
