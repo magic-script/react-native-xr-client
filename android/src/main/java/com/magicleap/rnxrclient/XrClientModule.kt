@@ -19,9 +19,8 @@ class XrClientModule(private val reactContext: ReactApplicationContext) : ReactC
 
     @ReactMethod
     fun connect(token: String, promise: Promise) {
-        bgExecutor.submit {
-            val result = xrClientSession.connect(currentActivity as AppCompatActivity, token)
-            promise.resolve(result)
+        tryResolveInBackground(promise) {
+            xrClientSession.connect(currentActivity as AppCompatActivity, token)
         }
     }
 
@@ -33,13 +32,13 @@ class XrClientModule(private val reactContext: ReactApplicationContext) : ReactC
 
     @ReactMethod
     fun getAllPCFs(promise: Promise) {
-        bgExecutor.submit {
+        tryResolveInBackground(promise) {
             val anchors = xrClientSession.getAllAnchors()
             val pcfArray = Arguments.createArray()
             anchors.forEach {
                 pcfArray.pushMap(it.toWritableMap())
             }
-            promise.resolve(pcfArray)
+            pcfArray
         }
     }
 
@@ -50,49 +49,42 @@ class XrClientModule(private val reactContext: ReactApplicationContext) : ReactC
 
     @ReactMethod
     fun createAnchor(anchorId: String, position: ReadableArray, promise: Promise) {
-        val matrixRaw = FloatArray(16)
-        for (i in 0..15) {
-            matrixRaw[i] = position.getDouble(i).toFloat()
-        }
-        val matrix = Matrix(matrixRaw)
+        tryResolveInBackground(promise) {
+            val matrixRaw = FloatArray(16)
+            for (i in 0..15) {
+                matrixRaw[i] = position.getDouble(i).toFloat()
+            }
+            val matrix = Matrix(matrixRaw)
 
-        val translation = Vector3()
-        val rotationVector = Vector3()
-        val quaternion = Quaternion()
+            val translation = Vector3()
+            val rotationVector = Vector3()
+            val quaternion = Quaternion()
 
-        matrix.decomposeTranslation(translation)
-        matrix.decomposeRotation(rotationVector, quaternion)
+            matrix.decomposeTranslation(translation)
+            matrix.decomposeRotation(rotationVector, quaternion)
 
-        val pose = Pose(
-            floatArrayOf(translation.x, translation.y, translation.z),
-                floatArrayOf(quaternion.x, quaternion.y, quaternion.z, quaternion.w))
+            val pose = Pose(
+                    floatArrayOf(translation.x, translation.y, translation.z),
+                    floatArrayOf(quaternion.x, quaternion.y, quaternion.z, quaternion.w))
 
-
-        try {
             xrClientSession.createAnchor(anchorId, pose)
-            promise.resolve("success")
-        } catch (throwable: Throwable) {
-            promise.reject(throwable)
+            "success"
         }
     }
 
     @ReactMethod
     fun removeAnchor(anchorId: String, promise: Promise) {
-        try {
+        tryResolveInBackground(promise) {
             xrClientSession.removeAnchor(anchorId)
-            promise.resolve("success")
-        } catch (throwable: Throwable) {
-            promise.reject(throwable)
+            "success"
         }
     }
 
     @ReactMethod
     fun removeAllAnchors(promise: Promise) {
-        try {
+        tryResolveInBackground(promise) {
             xrClientSession.removeAllAnchors()
-            promise.resolve("success")
-        } catch (throwable: Throwable) {
-            promise.reject(throwable)
+            "success"
         }
     }
 
@@ -119,5 +111,20 @@ class XrClientModule(private val reactContext: ReactApplicationContext) : ReactC
         pcf.putArray("pose", pose)
         pcf.putString("anchorId", anchorId)
         return pcf
+    }
+
+    private fun tryResolveInBackground(promise: Promise, resolver: () -> Any) {
+        bgExecutor.submit {
+            tryResolve(promise, resolver)
+        }
+    }
+
+    private fun tryResolve(promise: Promise, resolver: () -> Any) {
+        try {
+            val result = resolver()
+            promise.resolve(result)
+        } catch (throwable: Throwable) {
+            promise.reject(throwable)
+        }
     }
 }
