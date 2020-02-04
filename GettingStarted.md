@@ -1,38 +1,32 @@
 # Use `react-natrive-xr-client` in MagicScript Components project
 
-1. Create project
+1. Create project using interactive CLI
 
-```bash
-react-native init <project name>
+```
+magic-script init
+
+? What is the name of your application? MagicScriptXRSample
+? What is the app ID of your application? com.magicscript.xrsample
+? In which folder do you want to save this project? MagicScriptXRSample
+? What app type do you want? Components
+? What platform do you want develop on? iOS, Android
+? Use TypeScript? No
 ```
 
-2. Update the `package.json`. Add the following dependencies:
+2. Update `reactnative/package.json`. Add the following dependencies:
 ```javascript
 "react-native-xr-client": "0.0.6",
-"react-native-app-auth": "^4.4.0",
-"magic-script-components": "^2.0.2",
-"magic-script-components-react-native": "^1.0.2"
+"react-native-app-auth": "^4.4.0"
 ```
 3. add `.npmrc` file:
 ```bash
 registry=https://nexus.magicleap.blue/repository/npm-group/
 ```
-
 4. Remove `*.lock` files:
 - yarn.lock
-- ios/Podfile.lock
+- reactnative/ios/Podfile.lock
 
-5. Copy `proxy_mobile` folder to the project root folder 
-6. Update `index.js` file: 
-```javascript
-import React from 'react';
-import { MagicScript } from './proxy_mobile';
-import MyApp from './App';
-
-MagicScript.registerApp('<your project name>', <MyApp clientId='your.client.id.for.oauth'/>, false);
-```
-
-7. Update `App.js` file (demo code):
+5. Update `src/app.js` file (demo code):
 ```javascript
 import React from 'react';
 import { View, Text } from 'magic-script-components';
@@ -162,23 +156,51 @@ class MyApp extends React.Component {
 export default MyApp;
 ```
 
-8. Delete `app.json` file.
+6. Add `src/anchor-cube.js` file:
+```javascript
+import React from 'react';
+import { View, Line, Text } from 'magic-script-components';
 
-9. Run `yarn` from the terminal (main project folder)
+const red = [1, 0, 0, 1];
+const green = [0, 1, 0, 1];
+const blue = [0, 0, 1, 1];
+const vecStart = [0, 0, 0];
+const length = 0.25;
+
+// props:
+// - id
+// - uuid
+
+export default function (props) {
+  const uuid = props.uuid;
+  const vecX = [vecStart, [length, 0, 0]];
+  const vecY = [vecStart, [0, length, 0]];
+  const vecZ = [vecStart, [0, 0, length]];
+
+  return (
+    <View anchorUuid={uuid}>
+      <Line points={vecX} color={red} />
+      <Line points={vecY} color={green} />
+      <Line points={vecZ} color={blue} />
+      <Text textSize={0.02} text={props.id} textColor={red}/>
+    </View>
+  );
+}
+```
+
+7. Run `yarn` from the terminal (from main project folder)
+```bash
+yarn
+```
+
+8. Run `yarn` from the terminal again (from reactnative subfolder)
 ```bash
 yarn
 ```
 
 ## iOS Instructions:
 
-1. Edit the Podfile (from `ios` folder)
-- Remove unnecessary targets
-- Update the `platform :ios` to `12`
-```python
-platform :ios, '12.0'
-```
-
-2. Save `MLXR.framework` to local folder
+1. Save `MLXR.framework` to local folder (using folder `MLXR` under main project folder for remainder of steps)
 
 3. Run `pod install` from the terminal (ios folder)
 ```bash
@@ -186,16 +208,37 @@ pod install
 ```
 
 4. Open XCode and open `ios/<ProjectName>.xcworkspace` file
-    1. Add `EmptySwift.swift` to the `<ProjectName>` and create the `<ProjectName>-Brigging-Header.h`
-    2. Add `MLXR.framework` to the project from `General / Libraries`
-    3. Select team for signing form `Signing / Team`
-    4. Add `path` to the `MLXR.Framework` to `Build Settings / Search Paths` Framework and Header
-    5. Add `path` to the `MLXR.Framework` to `RNXrClient.xcconfig` (from `Pods/Development Pods/RNXrClient/Supported Files/RNXrClient.xcconfig)
+    1. Add `MLXR.framework` to the project from `General / Libraries`
+    2. Select team for signing form `Signing / Team`
+    3. Add `path` to the `MLXR.Framework` to `Build Settings / Framework Search Paths` and `Header Search Paths`:
     ```
-    FRAMEWORK_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/path/to/MLXR/framework"
-    HEADER_SEARCH_PATHS = <previous entry> "${PODS_ROOT}/path/to/MLXR/framework"
+    "$(SRCROOT)/../../MLXR"
     ```
-    6. Add to `Info.plist` the following item `Privacy - Camera Usage Description`
+    4. Add the following to the end of the `Podfile` to add the `MLXR.Framework` path to RXNrClient:
+    ```
+    def append_header_search_path(target, path)
+      target.build_configurations.each do |config|
+          # Note that there's a space character after `$(inherited)`.
+          config.build_settings["HEADER_SEARCH_PATHS"] ||= "$(inherited) "
+          config.build_settings["HEADER_SEARCH_PATHS"] << path
+      end
+    end
+    def append_framework_search_path(target, path)
+      target.build_configurations.each do |config|
+          # Note that there's a space character after `$(inherited)`.
+          config.build_settings["FRAMEWORK_SEARCH_PATHS"] ||= "$(inherited) "
+          config.build_settings["FRAMEWORK_SEARCH_PATHS"] << path
+      end
+    end
+    post_install do |installer|
+      installer.pods_project.targets.each do |target|
+        if target.name == "RNXrClient"
+          append_header_search_path(target, "$(PODS_ROOT)/../../../MLXR")
+          append_framework_search_path(target, "$(PODS_ROOT)/../../../MLXR")
+        end
+      end
+    end
+    ```
 
 5. Add `XrApp.h` file to the project:
 ```objective-c
@@ -268,140 +311,86 @@ react-native run-ios --device
 
 ## Android Instructions:
 
-1. Delete Android source files `MainActivity.java` and `MainApplication.java`.
+1. Update `MainApplication.java`:
+Replace:
+```java
+// packages.add(new MyReactNativePackage());
+```
+With:
+```java
+packages.add(new XrAppPackage());
+```
+And add the import:
+```java
+import com.magicscriptxrsample.XrAppPackage;
+```
 
-2. Add `MainActivity.kt` file to the project:
-```kotlin
-package com.magicscriptxrsample
+2. Update `MainActivity.java` to request required permissions:
+```java
+package com.magicscript.xrsample;
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import com.facebook.react.ReactActivity
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
-class MainActivity : ReactActivity() {
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
-    private val permissionRequestCode = 1
+import com.facebook.react.ReactActivity;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainActivity extends ReactActivity {
+
+    private final int permissionRequestCode = 1;
 
     /**
-     * Returns the name of the main component registered from JavaScript. This is used to schedule
-     * rendering of the component.
+     * Returns the name of the main component registered from JavaScript.
+     * This is used to schedule rendering of the component.
      */
-    override fun getMainComponentName(): String? {
-        return "MagicScriptXRSample"
+    @Override
+    protected String getMainComponentName() {
+        return "MagicScriptXRSample";
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        permissionRequest()
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        permissionRequest();
     }
 
-    private fun permissionRequest(): Boolean {
-        var permissions = arrayListOf<String>()
+    private boolean permissionRequest() {
+        List<String> permissions = new ArrayList<>();
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
-                permissions.add(Manifest.permission.CAMERA)
+                permissions.add(Manifest.permission.CAMERA);
             }
         }
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                permissions.add(Manifest.permission.ACCESS_FINE_LOCATION)
+                permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
             }
         }
 
-        if (permissions.size > 0) {
-            ActivityCompat.requestPermissions(this, permissions.toArray(arrayOfNulls(permissions.size)), permissionRequestCode)
+        if (permissions.size() > 0) {
+            ActivityCompat.requestPermissions(this,
+                    permissions.toArray(new String[permissions.size()]),
+                    permissionRequestCode);
         }
-        return when (permissions.size) {
-            0 -> true
-            else -> false
-        }
+        return permissions.size() == 0;
     }
 
-    override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<out String>,
-            grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        when (requestCode) {
-            permissionRequestCode -> {
-                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    Log.e("RNXRClient", "fine location permission request denied")
-                    Toast.makeText(this, "Requires all permissions to use the app.", Toast.LENGTH_LONG).show()
-                }
-            }
-        }
-    }
-}
-```
-
-3. Add `MainApplication.kt` file to the project:
-```kotlin
-package com.magicscriptxrsample
-
-import android.app.Application
-import android.content.Context
-import com.facebook.react.*
-import com.facebook.soloader.SoLoader
-import java.lang.reflect.InvocationTargetException
-
-class MainApplication : Application(), ReactApplication {
-    private val mReactNativeHost: ReactNativeHost = object : ReactNativeHost(this) {
-        override fun getUseDeveloperSupport(): Boolean {
-            return BuildConfig.DEBUG
-        }
-
-        override fun getPackages(): List<ReactPackage> {
-            val packages: MutableList<ReactPackage> = PackageList(this).packages
-            // Packages that cannot be autolinked yet can be added manually here, for example:
-            packages.add(XrAppPackage())
-            return packages
-        }
-
-        override fun getJSMainModuleName(): String {
-            return "index"
-        }
-    }
-
-    override fun getReactNativeHost(): ReactNativeHost {
-        return mReactNativeHost
-    }
-
-    override fun onCreate() {
-        super.onCreate()
-        SoLoader.init(this,  /* native exopackage */false)
-        initializeFlipper(this) // Remove this line if you don't want Flipper enabled
-    }
-
-    companion object {
-        /**
-         * Loads Flipper in React Native templates.
-         *
-         * @param context
-         */
-        private fun initializeFlipper(context: Context) {
-            if (BuildConfig.DEBUG) {
-                try { /*
-         We use reflection here to pick up the class that initializes Flipper,
-        since Flipper library is not available in release mode
-        */
-                    val aClass = Class.forName("com.facebook.flipper.ReactNativeFlipper")
-                    aClass.getMethod("initializeFlipper", Context::class.java).invoke(null, context)
-                } catch (e: ClassNotFoundException) {
-                    e.printStackTrace()
-                } catch (e: NoSuchMethodException) {
-                    e.printStackTrace()
-                } catch (e: IllegalAccessException) {
-                    e.printStackTrace()
-                } catch (e: InvocationTargetException) {
-                    e.printStackTrace()
-                }
+        if (requestCode == permissionRequestCode) {
+            if (grantResults.length == 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                Log.e("RNXRClient", "fine location permission request denied");
+                Toast.makeText(this, "Requires all permissions to use the app.", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -449,13 +438,12 @@ class XrAppPackage : ReactPackage {
 }
 ```
 
-6. Add required permissions to `AndroidManifest.xml`:
+6. Add fine location permission to `AndroidManifest.xml`:
 ```xml
-    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 ```
 
-7. Increase max JVM memory by adding to `android/gradle.properties`:
+7. Increase max JVM memory by adding to `reactnative/android/gradle.properties`:
 ```
 org.gradle.jvmargs=-Xmx1536m
 ```
