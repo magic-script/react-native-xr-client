@@ -15,8 +15,8 @@ import MLXR
 public class XrClientSession: NSObject {
 
     @objc public static let instance = XrClientSession()
-    static public weak var arSession: ARSession?
     static fileprivate let locationManager = CLLocationManager()
+    fileprivate weak var arSession: ARSession?
     fileprivate var xrClientSession: MLXRSession?
     fileprivate let xrQueue = DispatchQueue(label: "xrQueue")
     fileprivate var lastLocation: CLLocation?
@@ -43,9 +43,39 @@ public class XrClientSession: NSObject {
         XrClientSession.locationManager.startUpdatingLocation()
     }
 
-    @objc
-    static public func registerARSession(_ arSession: ARSession) {
-        XrClientSession.arSession = arSession
+    private func findArSession(view: UIView) -> ARSession? {
+        if let arSceneView = view as? ARSCNView {
+            return arSceneView.session
+        }
+        for subview in view.subviews {
+            if let arSession = findArSession(view: subview) {
+                return arSession
+            }
+        }
+        return nil
+    }
+
+    private func findArSession() -> ARSession? {
+        var arSession: ARSession? = nil
+        DispatchQueue.main.sync {
+            let viewController = UIApplication.shared.keyWindow!.rootViewController
+            if let view = viewController?.view {
+                arSession = findArSession(view: view)
+            }
+        }
+        return arSession
+    }
+
+    private func waitForArSession() -> ARSession? {
+        for _ in 1...30 {
+            guard let arSession = findArSession() else {
+                // Sleep for 200ms
+                usleep(200 * 1000)
+                continue;
+            }
+            return arSession
+        }
+        return nil
     }
 
     @objc
@@ -56,10 +86,12 @@ public class XrClientSession: NSObject {
                 return
             }
 
-            guard let arSession = XrClientSession.arSession else {
+            guard let arSession = self.waitForArSession() else {
                 reject("code", "ARSession does not exist", nil)
                 return
             }
+
+            self.arSession = arSession
 
             self.xrClientSession = MLXRSession(token, arSession)
             if let xrSession = self.xrClientSession {
@@ -91,18 +123,18 @@ public class XrClientSession: NSObject {
             return
         }
 
-        guard let frame = XrClientSession.arSession?.currentFrame else {
+        guard let frame = self.arSession?.currentFrame else {
             print("no ar frame available")
             return
         }
 
         if let previuosTrackingState = trackingState,
-            let currentTrackingState = XrClientSession.arSession?.currentFrame?.camera.trackingState,
+            let currentTrackingState = self.arSession?.currentFrame?.camera.trackingState,
             previuosTrackingState != currentTrackingState {
             print("TrackingState: ", currentTrackingState.description);
         }
 
-        trackingState = XrClientSession.arSession?.currentFrame?.camera.trackingState
+        trackingState = self.arSession?.currentFrame?.camera.trackingState
 
         _ = xrSession.update(frame, currentLocation)
     }
@@ -144,7 +176,7 @@ public class XrClientSession: NSObject {
     @objc
     public func createAnchor(_ anchorId: String, position: NSArray, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         xrQueue.async {
-            guard let arSession = XrClientSession.arSession else {
+            guard let arSession = self.arSession else {
                 reject("code", "ARSession has not been initialized!", nil)
                 return
             }
@@ -166,10 +198,10 @@ public class XrClientSession: NSObject {
     @objc
     public func removeAnchor(_ anchorId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         xrQueue.async {
-            if let anchors = XrClientSession.arSession?.currentFrame?.anchors {
+            if let anchors = self.arSession?.currentFrame?.anchors {
                 for anchor in anchors {
                     if let name = anchor.name, name == anchorId {
-                        XrClientSession.arSession?.remove(anchor: anchor)
+                        self.arSession?.remove(anchor: anchor)
                     }
                 }
             }
@@ -180,9 +212,9 @@ public class XrClientSession: NSObject {
     @objc
     public func removeAllAnchors(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         xrQueue.async {
-            if let anchors = XrClientSession.arSession?.currentFrame?.anchors {
+            if let anchors = self.arSession?.currentFrame?.anchors {
                 for anchor in anchors {
-                    XrClientSession.arSession?.remove(anchor: anchor)
+                    self.arSession?.remove(anchor: anchor)
                 }
             }
             resolve("success")
