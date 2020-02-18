@@ -18,6 +18,4 @@
 
 @interface XrClientBridge : NSObject <RCTBridgeModule>
 
-+ (void)registerARSession:(ARSession *)session;
-
 @end

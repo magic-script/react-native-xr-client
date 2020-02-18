@@ -34,7 +34,6 @@ import { authorize } from 'react-native-app-auth';
 import { NativeModules } from 'react-native';
 
 import AnchorCube from './anchor-cube.js';
-import shareSession from './share-session';
 
 const { XrClientBridge } = NativeModules;
 
@@ -54,7 +53,6 @@ const oAuthConfig = {
   }
 };
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const getUUID = (id, pose) => `${id}#[${pose}]`;
 
 class MyApp extends React.Component {
@@ -68,13 +66,7 @@ class MyApp extends React.Component {
   }
 
   async componentDidMount () {
-    await sleep(1000);
-    await shareSession();
-
-    await sleep(1000);
     const oauth = await this.authorizeToXrServer(oAuthConfig);
-
-    await sleep(1000);
     const status = await this.connectToXrServer(oauth);
 
     this._updateInterval = setInterval(() => this.updateAnchors(), 1000);
@@ -184,18 +176,6 @@ export default function (props) {
 }
 ```
 
-7. Add iOS-specific file `src/share-session.ios.js`:
-```javascript
-import { NativeModules } from 'react-native';
-
-export default NativeModules.XrApp.shareSession;
-```
-
-8. Add android-specific file `src/share-session.android.js`:
-```javascript
-export default async function shareSession() { /* no-op on Android */ }
-```
-
 7. Run `yarn` from the terminal (from main project folder)
 ```bash
 yarn
@@ -248,36 +228,7 @@ pod install
     end
     ```
 
-5. Add `XrApp.h` file to the project:
-```objective-c
-#import <React/RCTBridgeModule.h>
-
-@interface XrApp : NSObject <RCTBridgeModule>
-
-@end
-```
-6. Add `XrApp.m` file to the project:
-```objective-c
-#import "XrApp.h"
-#import <ARKit/ARKit.h>
-
-@import RNMagicScript;
-@import RNXrClient;
-
-@implementation XrApp
-
-RCT_EXPORT_MODULE()
-
-RCT_EXPORT_METHOD(shareSession:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
-{
-      [RNXrClient registerSession: RCTARView.arSession];
-      resolve(@"success");
-}
-
-@end
-```
-
-7. Update `AppDelegate.h` file:
+5. Update `AppDelegate.h` file:
 ```objective-c
 #import <React/RCTBridgeDelegate.h>
 #import <UIKit/UIKit.h>
@@ -291,7 +242,7 @@ RCT_EXPORT_METHOD(shareSession:(RCTPromiseResolveBlock)resolve reject:(RCTPromis
 @end
 ```
 
-8. Add to `AppDelegate.m` file:
+6. Add to `AppDelegate.m` file:
 ```objective-c
 #import "AppDelegate.h"
 
@@ -309,7 +260,7 @@ RCT_EXPORT_METHOD(shareSession:(RCTPromiseResolveBlock)resolve reject:(RCTPromis
 ...
 ```
 
-9. Build and run the project:
+7. Build and run the project:
 - from the terminal:
 ```bash
 react-native run-ios --device

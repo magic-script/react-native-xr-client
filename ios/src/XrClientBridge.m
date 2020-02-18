@@ -29,10 +29,6 @@
     return dispatch_get_main_queue();
 }
 
-+ (void)registerARSession:(ARSession *)session {
-    [XrClientSession registerARSession: session];
-}
-
 RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(connect:(NSString *)token resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
