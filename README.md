@@ -5,34 +5,39 @@
 React Native XR SDK Client Library
 
 ## Getting started
+1. Add the package as dependency
+```bash
+$ npm install react-native-xr-client --save
+```
+2. Go to `ios` folder
+```bash
+$ cd ios
+```
+3. Install the `RNXrClient` pod
+```
+pod install
+```
 
-`$ npm install react-native-xr-client --save`
-
-### Mostly automatic installation
-
-`$ react-native link react-native-xr-client`
-
-### Manual installation
-
-
-#### iOS
-
-1. In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
-2. Go to `node_modules` ➜ `react-native-xr-client` and add `RNXrClient.xcodeproj`
-3. In XCode, in the project navigator, select your project. Add `libRNXrClient.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
-4. Run your project (`Cmd+R`)<
+### iOS
+1. Open the workspace from XCode
+2. Find the `RNXrClient` under Pods/Development Pods
+3. Add to `RNXrClient.xcconfig` file:
+```
+FRAMEWORK_SEARCH_PATHS = $(inherited) "the/path/to/MLXRSDK"
+HEADER_SEARCH_PATHS = <existing paths> "the/path/to/MLXRSDK"
+```
 
 ## Usage
 ```javascript
-import RNXrClient from 'react-native-xr-client';
+import { NativeModules } from 'react-native';
+const { XrClientBridge } = NativeModules;
 
-// TODO: What to do with the module?
-RNXrClient;
+// XrClientBridge API
+// - connect(token)
+// - getAllPCFs()
+// - getLocalizationSatus()
+// - createAnchor(id, transform)
+// - removeAnchor(id)
+// - removeAllAnchors()
+// - setUpdateInterval(interval)
 ```
-
-## Cleanup and rebuild the library
-```sh
-rm -rf node_modules && yarn cache clean && yarn
-react-native start --reset-cache
-```
-Run in Xcode
