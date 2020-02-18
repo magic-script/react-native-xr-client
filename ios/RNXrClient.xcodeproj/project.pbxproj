@@ -7,15 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1155364123FC9B2C00FDE9DD /* XrClientBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 1155363D23FC9B2C00FDE9DD /* XrClientBridge.m */; };
+		1155364323FC9B2C00FDE9DD /* XrClientBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = 1155363F23FC9B2C00FDE9DD /* XrClientBridge.h */; };
 		7D67193022FB839700BED26C /* XrClientAnchorData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D67192B22FB839700BED26C /* XrClientAnchorData.swift */; };
-		7D67193122FB839700BED26C /* XRClientBoundedVolume.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D67192C22FB839700BED26C /* XRClientBoundedVolume.swift */; };
 		7D67193222FB839700BED26C /* XrClientSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D67192D22FB839700BED26C /* XrClientSession.swift */; };
 		7D67193322FB839700BED26C /* XrClientSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D67192E22FB839700BED26C /* XrClientSession.m */; };
 		7D67193422FB839700BED26C /* XrClientLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D67192F22FB839700BED26C /* XrClientLocalization.swift */; };
 		7D9CBBB522FB6300004888B3 /* React.xcodeproj in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D9CBB8222FB62C6004888B3 /* React.xcodeproj */; };
-		A9E850BC23064B6B00AA0CF3 /* XrClient.m in Sources */ = {isa = PBXBuildFile; fileRef = A9E850BB23064B6B00AA0CF3 /* XrClient.m */; };
-		BC8036982317008000C2D199 /* XrClient.h in Headers */ = {isa = PBXBuildFile; fileRef = BC8036872317008000C2D199 /* XrClient.h */; };
-		EEF09DF32317244700D39D20 /* XrClient.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = BC8036872317008000C2D199 /* XrClient.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -147,23 +145,21 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				EEF09DF32317244700D39D20 /* XrClient.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1155363D23FC9B2C00FDE9DD /* XrClientBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XrClientBridge.m; path = src/XrClientBridge.m; sourceTree = "<group>"; };
+		1155363F23FC9B2C00FDE9DD /* XrClientBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XrClientBridge.h; path = src/XrClientBridge.h; sourceTree = "<group>"; };
 		134814201AA4EA6300B7C361 /* libRNXrClient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNXrClient.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D67191A22FB839700BED26C /* RNXrClient-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "RNXrClient-Bridging-Header.h"; path = "src/RNXrClient-Bridging-Header.h"; sourceTree = "<group>"; };
 		7D67192B22FB839700BED26C /* XrClientAnchorData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = XrClientAnchorData.swift; path = src/XrClientAnchorData.swift; sourceTree = "<group>"; };
-		7D67192C22FB839700BED26C /* XRClientBoundedVolume.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = XRClientBoundedVolume.swift; path = src/XRClientBoundedVolume.swift; sourceTree = "<group>"; };
 		7D67192D22FB839700BED26C /* XrClientSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = XrClientSession.swift; path = src/XrClientSession.swift; sourceTree = "<group>"; };
 		7D67192E22FB839700BED26C /* XrClientSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XrClientSession.m; path = src/XrClientSession.m; sourceTree = "<group>"; };
 		7D67192F22FB839700BED26C /* XrClientLocalization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = XrClientLocalization.swift; path = src/XrClientLocalization.swift; sourceTree = "<group>"; };
 		7D9CBB8222FB62C6004888B3 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../../react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
-		A9E850BB23064B6B00AA0CF3 /* XrClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = XrClient.m; path = src/XrClient.m; sourceTree = "<group>"; };
-		BC8036872317008000C2D199 /* XrClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XrClient.h; path = src/XrClient.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -189,12 +185,11 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				1155363F23FC9B2C00FDE9DD /* XrClientBridge.h */,
+				1155363D23FC9B2C00FDE9DD /* XrClientBridge.m */,
 				7D67192B22FB839700BED26C /* XrClientAnchorData.swift */,
-				7D67192C22FB839700BED26C /* XRClientBoundedVolume.swift */,
 				7D67192F22FB839700BED26C /* XrClientLocalization.swift */,
 				7D67192E22FB839700BED26C /* XrClientSession.m */,
-				A9E850BB23064B6B00AA0CF3 /* XrClient.m */,
-				BC8036872317008000C2D199 /* XrClient.h */,
 				7D67192D22FB839700BED26C /* XrClientSession.swift */,
 				7D67191A22FB839700BED26C /* RNXrClient-Bridging-Header.h */,
 				134814211AA4EA7D00B7C361 /* Products */,
@@ -240,7 +235,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BC8036982317008000C2D199 /* XrClient.h in Headers */,
+				1155364323FC9B2C00FDE9DD /* XrClientBridge.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -425,11 +420,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A9E850BC23064B6B00AA0CF3 /* XrClient.m in Sources */,
+				1155364123FC9B2C00FDE9DD /* XrClientBridge.m in Sources */,
 				7D67193422FB839700BED26C /* XrClientLocalization.swift in Sources */,
 				7D67193222FB839700BED26C /* XrClientSession.swift in Sources */,
 				7D67193322FB839700BED26C /* XrClientSession.m in Sources */,
-				7D67193122FB839700BED26C /* XRClientBoundedVolume.swift in Sources */,
 				7D67193022FB839700BED26C /* XrClientAnchorData.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

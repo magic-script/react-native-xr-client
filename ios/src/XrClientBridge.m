@@ -17,7 +17,6 @@
 #import <ARKit/ARKit.h>
 #import <CoreLocation/CoreLocation.h>
 #import "XrClientBridge.h"
-#import "RNXrClient-Swift.h"
 
 @implementation XrClientBridge
 
