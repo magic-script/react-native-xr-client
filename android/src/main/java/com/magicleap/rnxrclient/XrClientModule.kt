@@ -7,11 +7,13 @@ import com.google.ar.sceneform.math.Matrix
 import com.google.ar.sceneform.math.Quaternion
 import com.google.ar.sceneform.math.Vector3
 import com.magicleap.xrkit.MLXRAnchor
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class XrClientModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
-    val xrClientSession = XrClientSession()
-    val bgExecutor = Executors.newSingleThreadExecutor()
+@Suppress("unused")
+class XrClientModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
+    private val xrClientSession = XrClientSession()
+    private val bgExecutor: ExecutorService = Executors.newSingleThreadExecutor()
 
     override fun getName(): String {
         return "XrClientBridge"
@@ -25,7 +27,7 @@ class XrClientModule(private val reactContext: ReactApplicationContext) : ReactC
     }
 
     @ReactMethod
-    fun setUpdateInterval(interval: Double, promise: Promise) {
+    fun setUpdateInterval(@Suppress("UNUSED_PARAMETER") interval: Double, promise: Promise) {
         // no-op for now
         promise.resolve("success")
     }
