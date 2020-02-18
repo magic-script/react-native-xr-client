@@ -36,7 +36,7 @@ import { NativeModules } from 'react-native';
 import AnchorCube from './anchor-cube.js';
 import shareSession from './share-session';
 
-const { XrApp, XrClientBridge } = NativeModules;
+const { XrClientBridge } = NativeModules;
 
 const oAuthConfig = {
   cacheKey: 'auth/prod',
