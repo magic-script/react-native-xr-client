@@ -30,10 +30,11 @@ registry=https://nexus.magicleap.blue/repository/npm-group/
 ```javascript
 import React from 'react';
 import { View, Text } from 'magic-script-components';
-import AnchorCube from './anchor-cube.js';
-
 import { authorize } from 'react-native-app-auth';
 import { NativeModules } from 'react-native';
+
+import AnchorCube from './anchor-cube.js';
+import shareSession from './share-session';
 
 const { XrApp, XrClientBridge } = NativeModules;
 
@@ -66,22 +67,17 @@ class MyApp extends React.Component {
     };
   }
 
-  componentDidMount () {
-    setTimeout(async () => {
-      console.log('MyXrDemoApp: sharing ARSession');
-      await XrApp.shareSession();
+  async componentDidMount () {
+    await sleep(1000);
+    await shareSession();
 
-      await sleep(1000);
+    await sleep(1000);
+    const oauth = await this.authorizeToXrServer(oAuthConfig);
 
-      const oauth = await this.authorizeToXrServer(oAuthConfig);
+    await sleep(1000);
+    const status = await this.connectToXrServer(oauth);
 
-      await sleep(1000);
-
-      const status = await this.connectToXrServer(oauth);
-
-      this._updateInterval = setInterval(() => this.updateAnchors(), 1000);
-
-    }, 1000);
+    this._updateInterval = setInterval(() => this.updateAnchors(), 1000);
   }
 
   componentWillUnmount () {
@@ -186,6 +182,18 @@ export default function (props) {
     </View>
   );
 }
+```
+
+7. Add iOS-specific file `src/share-session.ios.js`:
+```javascript
+import { NativeModules } from 'react-native';
+
+export default NativeModules.XrApp.shareSession;
+```
+
+8. Add android-specific file `src/share-session.android.js`:
+```javascript
+export default async function shareSession() { /* no-op on Android */ }
 ```
 
 7. Run `yarn` from the terminal (from main project folder)
@@ -311,21 +319,7 @@ react-native run-ios --device
 
 ## Android Instructions:
 
-1. Update `MainApplication.java`:
-Replace:
-```java
-// packages.add(new MyReactNativePackage());
-```
-With:
-```java
-packages.add(new XrAppPackage());
-```
-And add the import:
-```java
-import com.magicscriptxrsample.XrAppPackage;
-```
-
-2. Update `MainActivity.java` to request required permissions:
+1. Update `MainActivity.java` to request required permissions:
 ```java
 package com.magicscript.xrsample;
 
@@ -397,58 +391,17 @@ public class MainActivity extends ReactActivity {
 }
 ```
 
-4. Add `XrAppModule.kt` file to the project:
-```kotlin
-package com.magicscriptxrsample
-
-import com.facebook.react.bridge.Promise
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
-
-class XrAppModule internal constructor(context: ReactApplicationContext?) : ReactContextBaseJavaModule(context!!) {
-    override fun getName(): String {
-        return "XrApp"
-    }
-
-    @ReactMethod
-    fun shareSession(promise: Promise) {
-        promise.resolve("success")
-    }
-}
-```
-
-5. Add `XrAppPackage.kt` file to the project:
-```kotlin
-package com.magicscriptxrsample
-
-import com.facebook.react.ReactPackage
-import com.facebook.react.bridge.NativeModule
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.uimanager.ViewManager
-
-class XrAppPackage : ReactPackage {
-    override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-        return listOf<NativeModule>(XrAppModule(reactContext))
-    }
-
-    override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
-        return emptyList()
-    }
-}
-```
-
-6. Add fine location permission to `AndroidManifest.xml`:
+2. Add fine location permission to `AndroidManifest.xml`:
 ```xml
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 ```
 
-7. Increase max JVM memory by adding to `reactnative/android/gradle.properties`:
+3. Increase max JVM memory by adding to `reactnative/android/gradle.properties`:
 ```
 org.gradle.jvmargs=-Xmx1536m
 ```
 
-8. Update top-level android/build.gradle:
+4. Update top-level android/build.gradle:
     1. Add kotlin version (under `buildscript`):
     ```groovy
     ext.kotlin_version = '1.3.50'
@@ -465,7 +418,7 @@ org.gradle.jvmargs=-Xmx1536m
     classpath 'com.google.ar.sceneform:plugin:1.13.0'
     ```
 
-9. Update android/app/build.gradle:
+5. Update android/app/build.gradle:
     1. Add auth config (under `android / defaultConfig`):
     ```groovy
     manifestPlaceholders = [
@@ -498,7 +451,7 @@ org.gradle.jvmargs=-Xmx1536m
     apply plugin: 'kotlin-android-extensions'
     ```
 
-10. Build and run the project:
+6. Build and run the project:
 - from the terminal:
 ```bash
 react-native run-android
