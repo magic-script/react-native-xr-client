@@ -83,8 +83,8 @@ class XrClientSession {
     private fun waitForArFragment(activity: AppCompatActivity) {
         var foundArFragment = false
         val waitTime = 30 * 1000 // Poll for 30 seconds
-        val sleepTime = 50 // Sleep for 50ms between polling
-        repeat(waitTime / sleepTime) {
+        val sleepTime = 50L // Sleep for 50ms between polling
+        repeat((waitTime / sleepTime).toInt()) {
             runOnMainThreadBlocking {
                 val frag = activity.supportFragmentManager.findFragmentByTag("arFragment") as ArFragment?
                 frag?.let {
@@ -97,7 +97,7 @@ class XrClientSession {
             } else {
                 try {
                     Thread.sleep(sleepTime)
-                } catch (InterruptedException ignore) {}
+                } catch (ignore: InterruptedException) {}
             }
         }
         throw TimeoutException("Timed out waiting for ArFragment")
