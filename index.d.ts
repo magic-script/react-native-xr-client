@@ -1,5 +1,3 @@
-// TODO(tcuadra): This should be provided by react-native-xr-client
-// First, react-native TS dependencies will need to be resolved correctly
 declare module 'react-native-xr-client' {
 
   /**
