@@ -1,4 +1,4 @@
-# Use `react-natrive-xr-client` in MagicScript Components project
+# Use `react-native-xr-client` in MagicScript Components project
 
 1. Create project using interactive CLI
 
