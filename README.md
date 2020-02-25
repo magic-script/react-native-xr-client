@@ -32,12 +32,8 @@ HEADER_SEARCH_PATHS = <existing paths> "the/path/to/MLXRSDK"
 import { NativeModules } from 'react-native';
 const { XrClientBridge } = NativeModules;
 
-// XrClientBridge API
-// - connect(token)
-// - getAllPCFs()
-// - getLocalizationSatus()
-// - createAnchor(id, transform)
-// - removeAnchor(id)
-// - removeAllAnchors()
-// - setUpdateInterval(interval)
+// See index.d.ts for XrClientBridge API
 ```
+
+## Detailed Getting Started Guide
+See [Getting Started](GettingStarted.md) for detailed step-by-step instructions to set up a sample react-native project that renders ML Anchors on both Android and iOS.

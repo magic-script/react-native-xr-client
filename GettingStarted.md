@@ -1,7 +1,6 @@
 # Use `react-native-xr-client` in MagicScript Components project
 
 1. Create project using interactive CLI
-
 ```
 magic-script init
 
@@ -18,10 +17,12 @@ magic-script init
 "react-native-xr-client": "0.0.6",
 "react-native-app-auth": "^4.4.0"
 ```
+
 3. add `.npmrc` file:
 ```bash
 registry=https://nexus.magicleap.blue/repository/npm-group/
 ```
+
 4. Remove `*.lock` files:
 - yarn.lock
 - reactnative/ios/Podfile.lock
@@ -38,7 +39,6 @@ import AnchorCube from './anchor-cube.js';
 const { XrClientBridge } = NativeModules;
 
 const oAuthConfig = {
-  cacheKey: 'auth/prod',
   issuer: 'https://auth.magicleap.com',
   clientId: 'com.magicleap.mobile.magicscript',
   redirectUrl: 'magicscript://code-callback',
@@ -188,14 +188,14 @@ yarn
 
 ## iOS Instructions:
 
-1. Save `MLXR.framework` to local folder (using folder `MLXR` under main project folder for remainder of steps)
+1. Save `MLXR.framework` from the XR SDK to a folder named `MLXR` under the project root
 
-3. Run `pod install` from the terminal (ios folder)
+2. Run `pod install` from the terminal (ios folder)
 ```bash
 pod install
 ```
 
-4. Open XCode and open `ios/<ProjectName>.xcworkspace` file
+3. Open XCode and open `ios/<ProjectName>.xcworkspace` file
     1. Add `MLXR.framework` to the project from `General / Libraries`
     2. Select team for signing form `Signing / Team`
     3. Add `path` to the `MLXR.Framework` to `Build Settings / Framework Search Paths` and `Header Search Paths`:
@@ -228,7 +228,7 @@ pod install
     end
     ```
 
-5. Update `AppDelegate.h` file:
+4. Update `AppDelegate.h` file:
 ```objective-c
 #import <React/RCTBridgeDelegate.h>
 #import <UIKit/UIKit.h>
@@ -242,7 +242,7 @@ pod install
 @end
 ```
 
-6. Add to `AppDelegate.m` file:
+5. Add to `AppDelegate.m` file:
 ```objective-c
 #import "AppDelegate.h"
 
@@ -260,17 +260,19 @@ pod install
 ...
 ```
 
-7. Build and run the project:
+6. Build and run the project:
 - from the terminal:
 ```bash
 react-native run-ios --device
 ```
 
-- or from XCode `build` & `run` 
+- or from XCode `build` & `run`
 
 ## Android Instructions:
 
-1. Update `MainActivity.java` to request required permissions:
+1. Save `XRKit.aar` from the XR SDK to a folder named `MLXR` under the project root (it should be right next to `MLXR.framework` if also targetting iOS)
+
+2. Update `MainActivity.java` to request required permissions:
 ```java
 package com.magicscript.xrsample;
 
@@ -342,17 +344,17 @@ public class MainActivity extends ReactActivity {
 }
 ```
 
-2. Add fine location permission to `AndroidManifest.xml`:
+3. Add fine location permission to `AndroidManifest.xml`:
 ```xml
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 ```
 
-3. Increase max JVM memory by adding to `reactnative/android/gradle.properties`:
+4. Increase max JVM memory by adding to `reactnative/android/gradle.properties`:
 ```
 org.gradle.jvmargs=-Xmx1536m
 ```
 
-4. Update top-level android/build.gradle:
+5. Update top-level android/build.gradle:
     1. Add kotlin version (under `buildscript`):
     ```groovy
     ext.kotlin_version = '1.3.50'
@@ -369,7 +371,7 @@ org.gradle.jvmargs=-Xmx1536m
     classpath 'com.google.ar.sceneform:plugin:1.13.0'
     ```
 
-5. Update android/app/build.gradle:
+6. Update android/app/build.gradle:
     1. Add auth config (under `android / defaultConfig`):
     ```groovy
     manifestPlaceholders = [
@@ -402,7 +404,7 @@ org.gradle.jvmargs=-Xmx1536m
     apply plugin: 'kotlin-android-extensions'
     ```
 
-6. Build and run the project:
+7. Build and run the project:
 - from the terminal:
 ```bash
 react-native run-android
