@@ -14,20 +14,11 @@ magic-script init
 
 2. Update `reactnative/package.json`. Add the following dependencies:
 ```javascript
-"react-native-xr-client": "0.0.6",
+"react-native-xr-client": "0.0.7",
 "react-native-app-auth": "^4.4.0"
 ```
 
-3. add `.npmrc` file:
-```bash
-registry=https://nexus.magicleap.blue/repository/npm-group/
-```
-
-4. Remove `*.lock` files:
-- yarn.lock
-- reactnative/ios/Podfile.lock
-
-5. Update `src/app.js` file (demo code):
+3. Update `src/app.js` file (demo code):
 ```javascript
 import React from 'react';
 import { View, Text } from 'magic-script-components';
@@ -144,7 +135,7 @@ class MyApp extends React.Component {
 export default MyApp;
 ```
 
-6. Add `src/anchor-cube.js` file:
+4. Add `src/anchor-cube.js` file:
 ```javascript
 import React from 'react';
 import { View, Line, Text } from 'magic-script-components';
@@ -176,12 +167,12 @@ export default function (props) {
 }
 ```
 
-7. Run `yarn` from the terminal (from main project folder)
+5. Run `yarn` from the terminal (from main project folder)
 ```bash
 yarn
 ```
 
-8. Run `yarn` from the terminal again (from reactnative subfolder)
+6. Run `yarn` from the terminal again (from reactnative subfolder)
 ```bash
 yarn
 ```
@@ -272,7 +263,7 @@ react-native run-ios --device
 
 1. Save `XRKit.aar` from the XR SDK to a folder named `MLXR` under the project root (it should be right next to `MLXR.framework` if also targetting iOS)
 
-2. Update `MainActivity.java` to request required permissions:
+2. Update `MainActivity.java` to request required permissions (full path: `reactnative/android/app/src/main/java/com/magicscript/xrsample/MainActivity.java` for app ID shown above: `com.magicscript.xrsample`):
 ```java
 package com.magicscript.xrsample;
 
@@ -344,7 +335,7 @@ public class MainActivity extends ReactActivity {
 }
 ```
 
-3. Add fine location permission to `AndroidManifest.xml`:
+3. Add fine location permission to `AndroidManifest.xml` (full path: `reactnative/android/app/src/main/AndroidManifest.xml`):
 ```xml
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 ```
