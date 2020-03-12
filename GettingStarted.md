@@ -254,7 +254,7 @@ pod install
 6. Build and run the project:
 - from the terminal:
 ```bash
-react-native run-ios --device
+magic-script build ios
 ```
 
 - or from XCode `build` & `run`
@@ -398,7 +398,7 @@ org.gradle.jvmargs=-Xmx1536m
 7. Build and run the project:
 - from the terminal:
 ```bash
-react-native run-android
+magic-script build android
 ```
 
 - or from Android Studio `Run`
