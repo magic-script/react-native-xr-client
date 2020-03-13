@@ -14,7 +14,7 @@ magic-script init
 
 2. Update `reactnative/package.json`. Add or update the following dependencies (magic-script-components-react-native will be present already but version number may need updating):
 ```javascript
-"react-native-xr-client": "0.0.7",
+"react-native-xr-client": "0.0.9",
 "react-native-app-auth": "^4.4.0",
 "magic-script-components-react-native": "1.0.4"
 ```
