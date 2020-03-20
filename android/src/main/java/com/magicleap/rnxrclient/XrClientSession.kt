@@ -135,6 +135,7 @@ class XrClientSession {
 
     private fun startMlxrSession(activity: AppCompatActivity, token: String) {
         mlxrSession = MLXRSession(activity)
+        mlxrSession.start(token)
         mlxrSession.setOnAnchorUpdateListener(object : MLXRSession.OnAnchorUpdateListener {
             @Synchronized
             override fun onAdd(added: List<MLXRAnchor>) {
@@ -157,7 +158,6 @@ class XrClientSession {
                 }
             }
         })
-        mlxrSession.start(token)
     }
 
     @MainThread
