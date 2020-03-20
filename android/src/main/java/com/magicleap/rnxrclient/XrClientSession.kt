@@ -46,18 +46,22 @@ class XrClientSession {
 
     private val mainThreadHandler = Handler(Looper.getMainLooper())
 
-    enum class AnchorEventType { ADDED, UPDATED, REMOVED }
+    enum class CollectionEventType { ADDED, UPDATED, REMOVED }
 
     data class AnchorEventData (
-            val type: AnchorEventType,
+            val type: CollectionEventType,
             var anchor: MLXRAnchor
     )
 
     private val anchorsById = hashMapOf<String, MLXRAnchor>()
-    private var sessionAnchorEvents: Queue<AnchorEventData> = ArrayDeque<AnchorEventData>()
+
+    private var sessionAnchorEvents: Queue<AnchorEventData> = ArrayDeque()
 
     val localizationStatus: MLXRSession.LocalizationStatus
         get() = currentLocStatus ?: MLXRSession.LocalizationStatus.LocalizationFailed
+
+    val sessionStatus: MLXRSession.Status
+        get() = currentConnectionStatus ?: MLXRSession.Status.Disconnected
 
     @WorkerThread
     fun connect(activity: AppCompatActivity, token: String): String {
@@ -131,30 +135,29 @@ class XrClientSession {
 
     private fun startMlxrSession(activity: AppCompatActivity, token: String) {
         mlxrSession = MLXRSession(activity)
-        mlxrSession.setToken(token)
-        mlxrSession.start()
         mlxrSession.setOnAnchorUpdateListener(object : MLXRSession.OnAnchorUpdateListener {
             @Synchronized
             override fun onAdd(added: List<MLXRAnchor>) {
                 for (anchor in added) {
-                    addAnchorEvents(AnchorEventData(AnchorEventType.ADDED, anchor))
+                    addAnchorEvents(AnchorEventData(CollectionEventType.ADDED, anchor))
                 }
             }
 
             @Synchronized
             override fun onUpdate(updated: List<MLXRAnchor>) {
                 for (anchor in updated) {
-                    addAnchorEvents(AnchorEventData(AnchorEventType.UPDATED, anchor))
+                    addAnchorEvents(AnchorEventData(CollectionEventType.UPDATED, anchor))
                 }
             }
 
             @Synchronized
             override fun onRemove(removed: List<MLXRAnchor>) {
                 for (anchor in removed) {
-                    addAnchorEvents(AnchorEventData(AnchorEventType.REMOVED, anchor))
+                    addAnchorEvents(AnchorEventData(CollectionEventType.REMOVED, anchor))
                 }
             }
         })
+        mlxrSession.start(token)
     }
 
     @MainThread
@@ -196,14 +199,14 @@ class XrClientSession {
         val updatedAnchorEvents = getAnchorEvents()
         for (anchorEvent in updatedAnchorEvents) {
             when (anchorEvent.type) {
-                AnchorEventType.ADDED -> {
+                CollectionEventType.ADDED -> {
                     addAnchorToMap(anchorEvent.anchor)
                 }
-                AnchorEventType.UPDATED -> {
+                CollectionEventType.UPDATED -> {
                     removeAnchorFromMap(anchorEvent.anchor)
                     addAnchorToMap(anchorEvent.anchor)
                 }
-                AnchorEventType.REMOVED -> {
+                CollectionEventType.REMOVED -> {
                     removeAnchorFromMap(anchorEvent.anchor)
                 }
             }
@@ -333,11 +336,11 @@ class XrClientSession {
 
 val MLXRSession.LocalizationStatus?.statusString: String
     get() = when(this) {
-        MLXRSession.LocalizationStatus.AwaitingLocation -> "awaiting location"
-        MLXRSession.LocalizationStatus.ScanningLocation -> "scanning location"
+        MLXRSession.LocalizationStatus.AwaitingLocation -> "awaitingLocation"
+        MLXRSession.LocalizationStatus.ScanningLocation -> "scanningLocation"
         MLXRSession.LocalizationStatus.Localized -> "localized"
-        MLXRSession.LocalizationStatus.LocalizationFailed -> "localization failed"
-        else -> "localization status unknown"
+        MLXRSession.LocalizationStatus.LocalizationFailed -> "localizationFailed"
+        else -> "localizationFailed"
     }
 
 val MLXRSession.Status?.statusString: String

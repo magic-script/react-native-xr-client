@@ -27,12 +27,6 @@ class XrClientModule(reactContext: ReactApplicationContext) : ReactContextBaseJa
     }
 
     @ReactMethod
-    fun setUpdateInterval(@Suppress("UNUSED_PARAMETER") interval: Double, promise: Promise) {
-        // no-op for now
-        promise.resolve("success")
-    }
-
-    @ReactMethod
     fun getAllPCFs(promise: Promise) {
         tryResolveInBackground(promise) {
             val anchors = xrClientSession.getAllAnchors()
@@ -42,6 +36,11 @@ class XrClientModule(reactContext: ReactApplicationContext) : ReactContextBaseJa
             }
             pcfArray
         }
+    }
+
+    @ReactMethod
+    fun getSessionStatus(promise: Promise) {
+        promise.resolve(xrClientSession.sessionStatus.statusString)
     }
 
     @ReactMethod
@@ -70,7 +69,7 @@ class XrClientModule(reactContext: ReactApplicationContext) : ReactContextBaseJa
                     floatArrayOf(quaternion.x, quaternion.y, quaternion.z, quaternion.w))
 
             xrClientSession.createAnchor(anchorId, pose)
-            "success"
+            true
         }
     }
 
@@ -78,7 +77,7 @@ class XrClientModule(reactContext: ReactApplicationContext) : ReactContextBaseJa
     fun removeAnchor(anchorId: String, promise: Promise) {
         tryResolveInBackground(promise) {
             xrClientSession.removeAnchor(anchorId)
-            "success"
+            true
         }
     }
 
@@ -86,7 +85,7 @@ class XrClientModule(reactContext: ReactApplicationContext) : ReactContextBaseJa
     fun removeAllAnchors(promise: Promise) {
         tryResolveInBackground(promise) {
             xrClientSession.removeAllAnchors()
-            "success"
+            true
         }
     }
 
@@ -100,8 +99,8 @@ class XrClientModule(reactContext: ReactApplicationContext) : ReactContextBaseJa
         }
 
         val pose = Arguments.createArray()
-        val matrix = FloatArray(16)
         this.getPose()?.let {
+            val matrix = FloatArray(16)
             it.toMatrix(matrix, 0)
             matrix.forEach { num -> pose.pushDouble(num.toDouble()) }
         }
