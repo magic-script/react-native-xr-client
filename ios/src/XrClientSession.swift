@@ -101,7 +101,7 @@ public class XrClientSession: NSObject {
                 }
                 resolve(self.mlxrSession.getStatus())
             } else {
-                reject("code", "XrClientSession could not been initialized!", nil)
+                reject("code", "XrClientSession could not be initialized!", nil)
             }
         }
     }
