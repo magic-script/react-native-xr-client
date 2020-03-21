@@ -17,7 +17,7 @@ magic-script init
 "react-native-xr-client": "0.0.9",
 "react-native-app-auth": "^4.4.0",
 "magic-script-components-react-native": "1.0.4"
-```1
+```
 
 3. Update `src/app.js` file (demo code):
 ```javascript
