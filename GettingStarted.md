@@ -17,18 +17,16 @@ magic-script init
 "react-native-xr-client": "0.0.9",
 "react-native-app-auth": "^4.4.0",
 "magic-script-components-react-native": "1.0.4"
-```
+```1
 
 3. Update `src/app.js` file (demo code):
 ```javascript
 import React from 'react';
 import { View, Text } from 'magic-script-components';
-import { authorize } from 'react-native-app-auth';
-import { NativeModules } from 'react-native';
-
 import AnchorCube from './anchor-cube.js';
 
-const { XrClientBridge } = NativeModules;
+import { authorize } from 'react-native-app-auth';
+import xrClient from 'react-native-xr-client';
 
 const oAuthConfig = {
   issuer: 'https://auth.magicleap.com',
@@ -45,95 +43,60 @@ const oAuthConfig = {
   }
 };
 
-const getUUID = (id, pose) => `${id}#[${pose}]`;
-
-class MyApp extends React.Component {
+export default class MyApp extends React.Component {
   constructor (props) {
     super(props);
 
     this.state = {
-      scenes: {},
-      anchorCount: 0
+      pcfs: []
     };
   }
 
   async componentDidMount () {
-    const oauth = await this.authorizeToXrServer(oAuthConfig);
-    const status = await this.connectToXrServer(oauth);
+    const oAuthResult = await authorize(oAuthConfig);
+    const status = await xrClient.connect(oAuthResult.accessToken);
+    console.log(`xrClient.connect: ${status}`);
 
     this._updateInterval = setInterval(() => this.updateAnchors(), 1000);
   }
 
   componentWillUnmount () {
-    if (Object.keys(this.state.scenes).length > 0) {
-      XrClientBridge.removeAllAnchors();
+    if (this.state.pcfs.length > 0) {
+      xrClient.removeAllAnchors();
     }
-  }
-
-  async authorizeToXrServer (config) {
-    console.log('MyXrDemoApp: authorizing');
-    const result = await authorize(config);
-    console.log('MyXrDemoApp: oAuthData', result);
-    return result;
-  }
-
-  async connectToXrServer (config) {
-    console.log('MyXrDemoApp: XrClientBridge.connecting');
-    const result = await XrClientBridge.connect(config.accessToken);
-    console.log('MyXrDemoApp: XrClientBridge.connect result', result);
-    return result;
+    clearInterval(this._updateInterval);
   }
 
   async updateAnchors () {
-    const status = await XrClientBridge.getLocalizationStatus();
-    console.log('MyXrDemoApp: localization status', status);
+    const status = await xrClient.getLocalizationStatus();
+    console.log(`localization status: ${status}`);
 
-    if (status === 'localized' && this.state.anchorCount === 0) {
-      const pcfList = await XrClientBridge.getAllPCFs();
-      console.log(`MyXrDemoApp: received ${pcfList.length} PCFs`);
+    if (status === 'localized' && this.state.pcfs.length === 0) {
+      const pcfs = await xrClient.getAllPCFs();
+      console.log(`received ${pcfs.length} PCFs`);
 
-      if (pcfList.length > 0) {
+      if (pcfs.length > 0) {
         clearInterval(this._updateInterval);
       }
 
-      var scenes = {};
+      pcfs.forEach(pcf => xrClient.createAnchor(pcf.anchorId, pcf.pose));
 
-      pcfList.forEach(pcfData => this.updateScenes(scenes, pcfData));
-
-      Object.values(scenes).forEach(scene => {
-        XrClientBridge.createAnchor(scene.uuid, scene.pcfPose);
-      });
-
-      this.setState({ scenes: scenes, anchorCount: pcfList.length });
-    }
-  }
-
-  updateScenes (scenes, pcfData) {
-    const uuid = getUUID(pcfData.anchorId, pcfData.pose);
-
-    if (scenes[pcfData.anchorId] === undefined) {
-      scenes[pcfData.anchorId] = {
-        uuid: uuid,
-        pcfId: pcfData.anchorId,
-        pcfPose: pcfData.pose
-      };
+      this.setState({ pcfs });
     }
   }
 
   render () {
-    const scenes = Object.values(this.state.scenes);
+    const pcfs = this.state.pcfs;
     return (
       <View name='main-view'>
-        { scenes.length === 0
+        { pcfs.length === 0
           ? (<Text text='Initializing ...' />)
-          : scenes.map( scene => <AnchorCube key={scene.uuid} uuid={scene.uuid} id={scene.pcfId} />)
+          : pcfs.map( pcf => <AnchorCube key={pcf.anchorId} id={pcf.anchorId} />)
         }
       </View>
     );
   }
 }
-
-export default MyApp;
 ```
 
 4. Add `src/anchor-cube.js` file:
