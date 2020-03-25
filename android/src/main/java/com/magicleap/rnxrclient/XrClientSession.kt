@@ -20,21 +20,20 @@ import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.ux.ArFragment
 import com.magicleap.xrkit.MLXRAnchor
 import com.magicleap.xrkit.MLXRSession
-import java.lang.IllegalArgumentException
-import java.lang.IllegalStateException
 import java.util.*
 import java.util.concurrent.TimeoutException
 
 
 private const val DEBUG_MODE = false
-private const val TAG: String = "XRKit"
 
 class XrClientSession {
+    companion object {
+        private const val TAG = "XRKit"
+    }
+
     private lateinit var arFragment: ArFragment
     private lateinit var mlxrSession: MLXRSession
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-
-    private val anchorIds: MutableSet<String> = mutableSetOf()
 
     private var currentLocStatus: MLXRSession.LocalizationStatus? = null
     private var currentConnectionStatus: MLXRSession.Status? = null
@@ -45,6 +44,9 @@ class XrClientSession {
     private var debugMessageText: TextView? = null
 
     private val mainThreadHandler = Handler(Looper.getMainLooper())
+
+    private val anchorNodeMap: MutableMap<String, XrClientAnchorNode> = HashMap()
+    private val pendingAnchorIds: MutableSet<String> = HashSet()
 
     enum class CollectionEventType { ADDED, UPDATED, REMOVED }
 
@@ -195,7 +197,7 @@ class XrClientSession {
     }
 
     @MainThread
-    private fun updateAnchors() {
+    private fun updateMlxrAnchors() {
         val updatedAnchorEvents = getAnchorEvents()
         for (anchorEvent in updatedAnchorEvents) {
             when (anchorEvent.type) {
@@ -209,6 +211,16 @@ class XrClientSession {
                 CollectionEventType.REMOVED -> {
                     removeAnchorFromMap(anchorEvent.anchor)
                 }
+            }
+        }
+    }
+
+    @MainThread
+    private fun updateLocalAnchors() {
+        val iterator = pendingAnchorIds.iterator()
+        iterator.forEach {
+            if (anchorNodeMap[it]?.tryCreateAnchor(arFragment.arSceneView) == true) {
+                iterator.remove()
             }
         }
     }
@@ -253,7 +265,8 @@ class XrClientSession {
     private fun onUpdate() {
         updateConnectionStatus()
         updateLocStatus()
-        updateAnchors()
+        updateMlxrAnchors()
+        updateLocalAnchors()
         updateFrame()
 
         if (DEBUG_MODE) {
@@ -271,39 +284,46 @@ class XrClientSession {
     fun createAnchor(anchorId: String, pose: Pose) {
         arFragment.view?.post {
             val scene = arFragment.arSceneView.scene
-            val session = arFragment.arSceneView.session ?:
-            throw IllegalStateException("createAnchor called with no AR Session")
 
-            val anchor = session.createAnchor(pose)
-            val anchorNode = AnchorNode(anchor)
-            anchorNode.name = anchorId
+            if (anchorNodeMap.containsKey(anchorId)) {
+                throw IllegalArgumentException("createAnchor called with existing anchor ID")
+            }
+
+            val anchorNode = XrClientAnchorNode(anchorId, pose)
             scene.addChild(anchorNode)
+            anchorNodeMap[anchorId] = anchorNode
 
-            anchorIds.add(anchorId)
+            if (!anchorNode.tryCreateAnchor(arFragment.arSceneView)) {
+                pendingAnchorIds.add(anchorId)
+            }
+
         } ?: throw IllegalStateException("createAnchor called with no AR Scene View")
     }
 
     @AnyThread
     fun removeAnchor(anchorId: String) {
         arFragment.view?.post {
+            anchorNodeMap.remove(anchorId)
+            pendingAnchorIds.remove(anchorId)
+
             val scene = arFragment.arSceneView.scene
 
             val anchorNode = scene.findByName(anchorId)
             if (anchorNode !is AnchorNode) {
                 throw IllegalArgumentException("No AnchorNode found with ID $anchorId")
             }
-            scene.removeChild(anchorNode)
+            arFragment.arSceneView.scene.removeChild(anchorNode)
+
             anchorNode.anchor?.detach()
 
-            anchorIds.remove(anchorId)
         } ?: throw IllegalStateException("removeAnchor called with no AR Scene View")
     }
 
     @AnyThread
     fun removeAllAnchors() {
         arFragment.view?.post {
-            anchorIds.forEach {
-                removeAnchor(it)
+            anchorNodeMap.forEach { (anchorId, _) ->
+                removeAnchor(anchorId)
             }
         }
     }
