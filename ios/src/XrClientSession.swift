@@ -99,7 +99,9 @@ public class XrClientSession: NSObject {
                     arSession.add(anchor: worldOriginAnchor)
                     arSession.delegate = self;
                 }
-                resolve(self.mlxrSession.getStatus())
+
+                let status: XrClientSessionStatus = XrClientSessionStatus(sessionStatus: self.mlxrSession.getStatus()?.status ?? MLXRSessionStatus_Disconnected)
+                resolve(status.rawValue)
             } else {
                 reject("code", "XrClientSession could not be initialized!", nil)
             }

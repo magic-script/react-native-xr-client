@@ -73,7 +73,7 @@ class XrClientSession {
             startArSession(activity)
             startMlxrSession(activity, token)
         }
-        return mlxrSession.getConnectionStatus()?.name ?: "null"
+        return sessionStatus.statusString
     }
 
     @AnyThread
