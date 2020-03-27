@@ -98,7 +98,6 @@ export default class MyApp extends React.Component {
         { pcfs.length === 0
           ? (
             <Prism
-              debug={true}
               size={[0.5, 0.5, 0.1]}
               positionRelativeToCamera={true}
               orientRelativeToCamera={true}
@@ -110,7 +109,6 @@ export default class MyApp extends React.Component {
           )
           : pcfs.map(pcf => (
             <Prism
-              debug={true}
               size={[0.5, 0.5, 0.5]}
               key={pcf.anchorId}
               anchorUuid={pcf.anchorId}
