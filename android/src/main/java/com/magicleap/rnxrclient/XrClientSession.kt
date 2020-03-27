@@ -20,21 +20,20 @@ import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.ux.ArFragment
 import com.magicleap.xrkit.MLXRAnchor
 import com.magicleap.xrkit.MLXRSession
-import java.lang.IllegalArgumentException
-import java.lang.IllegalStateException
 import java.util.*
 import java.util.concurrent.TimeoutException
 
 
 private const val DEBUG_MODE = false
-private const val TAG: String = "XRKit"
 
 class XrClientSession {
+    companion object {
+        private const val TAG = "XRKit"
+    }
+
     private lateinit var arFragment: ArFragment
     private lateinit var mlxrSession: MLXRSession
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-
-    private val anchorIds: MutableSet<String> = mutableSetOf()
 
     private var currentLocStatus: MLXRSession.LocalizationStatus? = null
     private var currentConnectionStatus: MLXRSession.Status? = null
@@ -46,18 +45,25 @@ class XrClientSession {
 
     private val mainThreadHandler = Handler(Looper.getMainLooper())
 
-    enum class AnchorEventType { ADDED, UPDATED, REMOVED }
+    private val anchorNodeMap: MutableMap<String, XrClientAnchorNode> = HashMap()
+    private val pendingAnchorIds: MutableSet<String> = HashSet()
+
+    enum class CollectionEventType { ADDED, UPDATED, REMOVED }
 
     data class AnchorEventData (
-            val type: AnchorEventType,
+            val type: CollectionEventType,
             var anchor: MLXRAnchor
     )
 
     private val anchorsById = hashMapOf<String, MLXRAnchor>()
-    private var sessionAnchorEvents: Queue<AnchorEventData> = ArrayDeque<AnchorEventData>()
+
+    private var sessionAnchorEvents: Queue<AnchorEventData> = ArrayDeque()
 
     val localizationStatus: MLXRSession.LocalizationStatus
         get() = currentLocStatus ?: MLXRSession.LocalizationStatus.LocalizationFailed
+
+    val sessionStatus: MLXRSession.Status
+        get() = currentConnectionStatus ?: MLXRSession.Status.Disconnected
 
     @WorkerThread
     fun connect(activity: AppCompatActivity, token: String): String {
@@ -67,7 +73,7 @@ class XrClientSession {
             startArSession(activity)
             startMlxrSession(activity, token)
         }
-        return mlxrSession.getConnectionStatus()?.name ?: "null"
+        return sessionStatus.statusString
     }
 
     @AnyThread
@@ -131,27 +137,26 @@ class XrClientSession {
 
     private fun startMlxrSession(activity: AppCompatActivity, token: String) {
         mlxrSession = MLXRSession(activity)
-        mlxrSession.setToken(token)
-        mlxrSession.start()
+        mlxrSession.start(token)
         mlxrSession.setOnAnchorUpdateListener(object : MLXRSession.OnAnchorUpdateListener {
             @Synchronized
             override fun onAdd(added: List<MLXRAnchor>) {
                 for (anchor in added) {
-                    addAnchorEvents(AnchorEventData(AnchorEventType.ADDED, anchor))
+                    addAnchorEvents(AnchorEventData(CollectionEventType.ADDED, anchor))
                 }
             }
 
             @Synchronized
             override fun onUpdate(updated: List<MLXRAnchor>) {
                 for (anchor in updated) {
-                    addAnchorEvents(AnchorEventData(AnchorEventType.UPDATED, anchor))
+                    addAnchorEvents(AnchorEventData(CollectionEventType.UPDATED, anchor))
                 }
             }
 
             @Synchronized
             override fun onRemove(removed: List<MLXRAnchor>) {
                 for (anchor in removed) {
-                    addAnchorEvents(AnchorEventData(AnchorEventType.REMOVED, anchor))
+                    addAnchorEvents(AnchorEventData(CollectionEventType.REMOVED, anchor))
                 }
             }
         })
@@ -192,20 +197,30 @@ class XrClientSession {
     }
 
     @MainThread
-    private fun updateAnchors() {
+    private fun updateMlxrAnchors() {
         val updatedAnchorEvents = getAnchorEvents()
         for (anchorEvent in updatedAnchorEvents) {
             when (anchorEvent.type) {
-                AnchorEventType.ADDED -> {
+                CollectionEventType.ADDED -> {
                     addAnchorToMap(anchorEvent.anchor)
                 }
-                AnchorEventType.UPDATED -> {
+                CollectionEventType.UPDATED -> {
                     removeAnchorFromMap(anchorEvent.anchor)
                     addAnchorToMap(anchorEvent.anchor)
                 }
-                AnchorEventType.REMOVED -> {
+                CollectionEventType.REMOVED -> {
                     removeAnchorFromMap(anchorEvent.anchor)
                 }
+            }
+        }
+    }
+
+    @MainThread
+    private fun updateLocalAnchors() {
+        val iterator = pendingAnchorIds.iterator()
+        iterator.forEach {
+            if (anchorNodeMap[it]?.tryCreateAnchor(arFragment.arSceneView) == true) {
+                iterator.remove()
             }
         }
     }
@@ -250,7 +265,8 @@ class XrClientSession {
     private fun onUpdate() {
         updateConnectionStatus()
         updateLocStatus()
-        updateAnchors()
+        updateMlxrAnchors()
+        updateLocalAnchors()
         updateFrame()
 
         if (DEBUG_MODE) {
@@ -268,39 +284,46 @@ class XrClientSession {
     fun createAnchor(anchorId: String, pose: Pose) {
         arFragment.view?.post {
             val scene = arFragment.arSceneView.scene
-            val session = arFragment.arSceneView.session ?:
-            throw IllegalStateException("createAnchor called with no AR Session")
 
-            val anchor = session.createAnchor(pose)
-            val anchorNode = AnchorNode(anchor)
-            anchorNode.name = anchorId
+            if (anchorNodeMap.containsKey(anchorId)) {
+                throw IllegalArgumentException("createAnchor called with existing anchor ID")
+            }
+
+            val anchorNode = XrClientAnchorNode(anchorId, pose)
             scene.addChild(anchorNode)
+            anchorNodeMap[anchorId] = anchorNode
 
-            anchorIds.add(anchorId)
+            if (!anchorNode.tryCreateAnchor(arFragment.arSceneView)) {
+                pendingAnchorIds.add(anchorId)
+            }
+
         } ?: throw IllegalStateException("createAnchor called with no AR Scene View")
     }
 
     @AnyThread
     fun removeAnchor(anchorId: String) {
         arFragment.view?.post {
+            anchorNodeMap.remove(anchorId)
+            pendingAnchorIds.remove(anchorId)
+
             val scene = arFragment.arSceneView.scene
 
             val anchorNode = scene.findByName(anchorId)
             if (anchorNode !is AnchorNode) {
                 throw IllegalArgumentException("No AnchorNode found with ID $anchorId")
             }
-            scene.removeChild(anchorNode)
+            arFragment.arSceneView.scene.removeChild(anchorNode)
+
             anchorNode.anchor?.detach()
 
-            anchorIds.remove(anchorId)
         } ?: throw IllegalStateException("removeAnchor called with no AR Scene View")
     }
 
     @AnyThread
     fun removeAllAnchors() {
         arFragment.view?.post {
-            anchorIds.forEach {
-                removeAnchor(it)
+            anchorNodeMap.forEach { (anchorId, _) ->
+                removeAnchor(anchorId)
             }
         }
     }
@@ -333,11 +356,11 @@ class XrClientSession {
 
 val MLXRSession.LocalizationStatus?.statusString: String
     get() = when(this) {
-        MLXRSession.LocalizationStatus.AwaitingLocation -> "awaiting location"
-        MLXRSession.LocalizationStatus.ScanningLocation -> "scanning location"
+        MLXRSession.LocalizationStatus.AwaitingLocation -> "awaitingLocation"
+        MLXRSession.LocalizationStatus.ScanningLocation -> "scanningLocation"
         MLXRSession.LocalizationStatus.Localized -> "localized"
-        MLXRSession.LocalizationStatus.LocalizationFailed -> "localization failed"
-        else -> "localization status unknown"
+        MLXRSession.LocalizationStatus.LocalizationFailed -> "localizationFailed"
+        else -> "localizationFailed"
     }
 
 val MLXRSession.Status?.statusString: String

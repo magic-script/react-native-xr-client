@@ -29,10 +29,11 @@ HEADER_SEARCH_PATHS = <existing paths> "the/path/to/MLXRSDK"
 
 ## Usage
 ```javascript
-import { NativeModules } from 'react-native';
-const { XrClientBridge } = NativeModules;
+import { XrClientProvider } from 'magic-script-components';
 
-// See index.d.ts for XrClientBridge API
+const xrClient = XrClientProvider.getXrClient();
+
+// See magic-script-components/XrClientBridge.d.ts for full API
 ```
 
 ## Detailed Getting Started Guide

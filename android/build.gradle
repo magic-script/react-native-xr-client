@@ -20,8 +20,8 @@ def safeExtGet(prop, fallback) {
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'maven'
 
 buildscript {
@@ -83,8 +83,9 @@ dependencies {
     //noinspection GradleDynamicVersion
     implementation 'com.facebook.react:react-native:+'  // From node_modules
     implementation 'com.google.android.gms:play-services-location:17.0.0'
-    implementation 'com.google.ar:core:1.14.0'
-    implementation 'com.google.ar.sceneform.ux:sceneform-ux:1.14.0'
+    implementation "androidx.appcompat:appcompat:1.1.0"
+    implementation 'com.google.ar:core:1.15.0'
+    implementation 'com.google.ar.sceneform.ux:sceneform-ux:1.15.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation files('../../../../MLXR/XRKit.aar')
 }

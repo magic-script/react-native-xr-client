@@ -35,16 +35,16 @@ RCT_EXPORT_METHOD(connect:(NSString *)token resolve:(RCTPromiseResolveBlock)reso
     [XrClientSession.instance connect:token resolve:resolve reject:reject];
 }
 
-RCT_EXPORT_METHOD(setUpdateInterval:(NSTimeInterval)interval resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
-    [XrClientSession.instance setUpdateInterval:interval resolve:resolve reject:reject];
-}
-
 RCT_EXPORT_METHOD(getAllPCFs:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
     [XrClientSession.instance getAllPCFs:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(getLocalizationStatus:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
     [XrClientSession.instance getLocalizationStatus:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(getSessionStatus:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    [XrClientSession.instance getSessionStatus:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(createAnchor:(NSString *)anchorId position:(NSArray *)position resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {

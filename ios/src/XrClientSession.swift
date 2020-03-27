@@ -17,7 +17,7 @@ public class XrClientSession: NSObject {
     @objc public static let instance = XrClientSession()
     static fileprivate let locationManager = CLLocationManager()
     fileprivate weak var arSession: ARSession?
-    fileprivate var xrClientSession: MLXRSession?
+    fileprivate let mlxrSession = MLXRSession()
     fileprivate let xrQueue = DispatchQueue(label: "xrQueue")
     fileprivate var lastLocation: CLLocation?
     fileprivate var trackingState: ARCamera.TrackingState?
@@ -93,31 +93,22 @@ public class XrClientSession: NSObject {
 
             self.arSession = arSession
 
-            self.xrClientSession = MLXRSession(token, arSession)
-            if let xrSession = self.xrClientSession {
+            if (self.mlxrSession.start(token)) {
                 if (arSession.delegate == nil) {
                     let worldOriginAnchor = ARAnchor(name: "WorldAnchor", transform: matrix_identity_float4x4)
                     arSession.add(anchor: worldOriginAnchor)
                     arSession.delegate = self;
                 }
-                resolve(xrSession.getStatus())
+
+                let status: XrClientSessionStatus = XrClientSessionStatus(sessionStatus: self.mlxrSession.getStatus()?.status ?? MLXRSessionStatus_Disconnected)
+                resolve(status.rawValue)
             } else {
-                reject("code", "XrClientSession has not been initialized!", nil)
+                reject("code", "XrClientSession could not be initialized!", nil)
             }
         }
     }
 
-    @objc
-    public func setUpdateInterval(_ interval: TimeInterval, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-        resolve(true)
-    }
-
     fileprivate func update() {
-        guard let xrSession = xrClientSession else {
-            print("no mlxr session avaiable")
-            return
-        }
-
         guard let currentLocation = lastLocation else {
             print("current location is not available")
             return
@@ -136,18 +127,31 @@ public class XrClientSession: NSObject {
 
         trackingState = self.arSession?.currentFrame?.camera.trackingState
 
-        _ = xrSession.update(frame, currentLocation)
+        _ = mlxrSession.update(frame, currentLocation)
     }
 
     @objc
     public func getAllPCFs(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         xrQueue.async { [weak self] in
-            guard let xrSession = self?.xrClientSession else {
+            guard let xrSession = self?.mlxrSession else {
                 reject("code", "XrClientSession has not been initialized!", nil)
                 return
             }
             let results: [[String: Any]] = xrSession.getAllAnchors().map { XrClientAnchorData($0) }.map { $0.getJsonRepresentation() }
             resolve(results)
+        }
+    }
+
+    @objc
+    public func getSessionStatus(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        xrQueue.async { [weak self] in
+            guard let self = self else {
+                reject("code", "XrClientSession does not exist", nil)
+                return
+            }
+
+            let status: XrClientSessionStatus = XrClientSessionStatus(sessionStatus: self.mlxrSession.getStatus()?.status ?? MLXRSessionStatus_Disconnected)
+            resolve(status.rawValue)
         }
     }
 
@@ -158,12 +162,8 @@ public class XrClientSession: NSObject {
                 reject("code", "XrClientSession does not exist", nil)
                 return
             }
-            guard let xrSession = self.xrClientSession else {
-                reject("code", "XrClientSession has not been initialized!", nil)
-                return
-            }
 
-            let status: XrClientLocalization = XrClientLocalization(localizationStatus: xrSession.getLocalizationStatus()?.status ?? MLXRLocalizationStatus_LocalizationFailed)
+            let status: XrClientLocalization = XrClientLocalization(localizationStatus: self.mlxrSession.getLocalizationStatus()?.status ?? MLXRLocalizationStatus_LocalizationFailed)
             resolve(status.rawValue)
         }
     }

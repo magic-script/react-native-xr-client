@@ -1,5 +1,5 @@
 import { NativeModules } from "react-native";
 
-const { XrClientBridge } = NativeModules;
+const xrClient = NativeModules.XrClientBridge;
 
-export default XrClientBridge;
+export default xrClient;
