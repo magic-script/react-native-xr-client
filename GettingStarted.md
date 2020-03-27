@@ -22,11 +22,12 @@ magic-script init
 3. Update `src/app.js` file (demo code):
 ```javascript
 import React from 'react';
-import { View, Text } from 'magic-script-components';
+import { Prism, Scene, Text } from 'magic-script-components';
 import AnchorCube from './anchor-cube.js';
 
-import { authorize } from 'react-native-app-auth';
-import xrClient from 'react-native-xr-client';
+import { XrClientProvider } from 'magic-script-components';
+
+const xrClient = XrClientProvider.getXrClient();
 
 const oAuthConfig = {
   issuer: 'https://auth.magicleap.com',
@@ -53,8 +54,13 @@ export default class MyApp extends React.Component {
   }
 
   async componentDidMount () {
-    const oAuthResult = await authorize(oAuthConfig);
-    const status = await xrClient.connect(oAuthResult.accessToken);
+    let accessToken;
+    if (typeof XrClientProvider.authorize === 'function') {
+      const oAuthResult = await XrClientProvider.authorize(oAuthConfig);
+      accessToken = oAuthResult.accessToken;
+    }
+
+    const status = await xrClient.connect(accessToken);
     console.log(`xrClient.connect: ${status}`);
 
     this._updateInterval = setInterval(() => this.updateAnchors(), 1000);
@@ -88,12 +94,32 @@ export default class MyApp extends React.Component {
   render () {
     const pcfs = this.state.pcfs;
     return (
-      <View name='main-view'>
+      <Scene>
         { pcfs.length === 0
-          ? (<Text text='Initializing ...' />)
-          : pcfs.map( pcf => <AnchorCube key={pcf.anchorId} id={pcf.anchorId} />)
+          ? (
+            <Prism
+              debug={true}
+              size={[0.5, 0.5, 0.1]}
+              positionRelativeToCamera={true}
+              orientRelativeToCamera={true}
+              position={[0, 0, -1]}
+              orientation={[0, 0, 0, 1]}
+            >
+              <Text text='Initializing ...' />
+            </Prism>
+          )
+          : pcfs.map(pcf => (
+            <Prism
+              debug={true}
+              size={[0.5, 0.5, 0.5]}
+              key={pcf.anchorId}
+              anchorUuid={pcf.anchorId}
+            >
+              <AnchorCube id={pcf.anchorId} />
+            </Prism>
+          ))
         }
-      </View>
+      </Scene>
     );
   }
 }
@@ -131,12 +157,35 @@ export default function (props) {
 }
 ```
 
-5. Run `yarn` from the terminal (from main project folder)
+5. Update `common/magic-script/MagicScript.js` file to set XR Client for react-native apps:
+```javascript
+import { AppRegistry, NativeModules } from 'react-native';
+import { XrClientProvider } from 'magic-script-components';
+import { ReactNativeMagicScript } from 'magic-script-components-react-native';
+import ReactNativeApp from '../react-native/ReactNativeApp';
+import { authorize } from 'react-native-app-auth';
+
+XrClientProvider.setXrClient(NativeModules.XrClientBridge);
+
+// Tack on authorize function for react-native only (not needed for lumin)
+XrClientProvider.authorize = authorize;
+
+const MagicScript = {
+    registerApp: (name, appComponent, debug = false) => {
+        AppRegistry.registerComponent(name, () => ReactNativeApp);
+        ReactNativeMagicScript.render(appComponent, { name: 'root' }, null, debug);
+    }
+};
+
+export { MagicScript };
+```
+
+6. Run `yarn` from the terminal (from main project folder)
 ```bash
 yarn
 ```
 
-6. Run `yarn` from the terminal again (from reactnative subfolder)
+7. Run `yarn` from the terminal again (from reactnative subfolder)
 ```bash
 yarn
 ```
