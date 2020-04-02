@@ -340,13 +340,14 @@ class XrClientSession {
         mainThreadHandler.post {
             try {
                 task()
-                done.open()
             } catch (t: Throwable) {
                 ex = t
+            } finally {
+                done.open()
             }
         }
         if (!done.block(30 * 1000)) {
-            throw TimeoutException()
+            throw TimeoutException("Timed out waiting for main thread task")
         }
         ex?.let {
             throw it
