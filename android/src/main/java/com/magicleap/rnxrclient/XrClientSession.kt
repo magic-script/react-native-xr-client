@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.AnyThread
@@ -17,6 +18,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.ar.core.Pose
 import com.google.ar.core.TrackingState
 import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.Scene
 import com.google.ar.sceneform.ux.ArFragment
 import com.magicleap.xrkit.MLXRAnchor
 import com.magicleap.xrkit.MLXRSession
@@ -48,6 +50,8 @@ class XrClientSession {
     private val anchorNodeMap: MutableMap<String, XrClientAnchorNode> = HashMap()
     private val pendingAnchorIds: MutableSet<String> = HashSet()
 
+    private var sceneOnUpdateListener: Scene.OnUpdateListener? = null
+
     enum class CollectionEventType { ADDED, UPDATED, REMOVED }
 
     data class AnchorEventData (
@@ -66,14 +70,22 @@ class XrClientSession {
         get() = currentConnectionStatus ?: MLXRSession.Status.Disconnected
 
     @WorkerThread
-    fun connect(activity: AppCompatActivity, token: String): String {
+    fun connect(activity: AppCompatActivity, token: String): Boolean {
         waitForArFragment(activity)
         runOnMainThreadBlocking {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity)
             startArSession(activity)
             startMlxrSession(activity, token)
         }
-        return sessionStatus.statusString
+        return true
+    }
+
+    @AnyThread
+    fun stop() {
+        runOnMainThreadBlocking {
+            stopArSession()
+            stopMlxrSession()
+        }
     }
 
     @AnyThread
@@ -115,11 +127,19 @@ class XrClientSession {
             addDebugOverlay(activity, arFragment)
         }
 
-        arFragment.arSceneView.scene.addOnUpdateListener { frameTime ->
+        sceneOnUpdateListener = Scene.OnUpdateListener { frameTime ->
             arFragment.onUpdate(frameTime)
             if (arFragment.arSceneView.arFrame?.camera?.trackingState == TrackingState.TRACKING) {
                 onUpdate()
             }
+        }
+        arFragment.arSceneView.scene.addOnUpdateListener(sceneOnUpdateListener)
+    }
+
+    @MainThread
+    private fun stopArSession() {
+        sceneOnUpdateListener?.let {
+            arFragment.arSceneView.scene.removeOnUpdateListener(it)
         }
     }
 
@@ -127,11 +147,13 @@ class XrClientSession {
     private fun addDebugOverlay(activity: AppCompatActivity, arFragment: ArFragment) {
         val parent = arFragment.view?.rootView as ViewGroup?
         parent?.post {
-            LayoutInflater.from(activity).inflate(R.layout.debug_overlay, parent)
-            conStatusText = activity.findViewById(R.id.sessionStatus)
-            locStatusText = activity.findViewById(R.id.localizationStatus)
-            pcfCountText = activity.findViewById(R.id.pcfCount)
-            debugMessageText = activity.findViewById(R.id.debugMessage)
+            if (parent.findViewById<View>(R.id.debugOverlay) == null) {
+                LayoutInflater.from(activity).inflate(R.layout.debug_overlay, parent)
+                conStatusText = activity.findViewById(R.id.sessionStatus)
+                locStatusText = activity.findViewById(R.id.localizationStatus)
+                pcfCountText = activity.findViewById(R.id.pcfCount)
+                debugMessageText = activity.findViewById(R.id.debugMessage)
+            }
         }
     }
 
@@ -160,6 +182,10 @@ class XrClientSession {
                 }
             }
         })
+    }
+
+    private fun stopMlxrSession() {
+        mlxrSession.stop()
     }
 
     @MainThread
