@@ -32,7 +32,15 @@
 RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(connect:(NSString *)token resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    [XrClientBridge start:token resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(start:(NSString *)token resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
     [XrClientSession.instance connect:token resolve:resolve reject:reject];
+}
+
+RCT_EXPORT_METHOD(stop:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    [XrClientSession.instance stopWithResolve:resolve reject:reject];
 }
 
 RCT_EXPORT_METHOD(getAllPCFs:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {

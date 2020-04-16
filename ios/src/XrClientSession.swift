@@ -101,10 +101,24 @@ public class XrClientSession: NSObject {
                 }
 
                 let status: XrClientSessionStatus = XrClientSessionStatus(sessionStatus: self.mlxrSession.getStatus()?.status ?? MLXRSessionStatus_Disconnected)
-                resolve(status.rawValue)
+                resolve(true)
             } else {
                 reject("code", "XrClientSession could not be initialized!", nil)
             }
+        }
+    }
+
+    @objc
+    public func stop(resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        xrQueue.async { [weak self] in
+            guard let self = self else {
+                reject("code", "XrClientSession does not exist", nil)
+                return
+            }
+
+            self.mlxrSession.stop()
+
+            resolve(true)
         }
     }
 
@@ -188,7 +202,7 @@ public class XrClientSession: NSObject {
             }
             if let transform = transform {
                 arSession.add(anchor: ARAnchor(name: anchorId, transform: transform))
-                resolve("success")
+                resolve(true)
             } else {
                 reject("code", "position should be a array of 16 float elements", nil)
             }
@@ -205,7 +219,7 @@ public class XrClientSession: NSObject {
                     }
                 }
             }
-            resolve("success")
+            resolve(true)
         }
     }
 
@@ -217,7 +231,7 @@ public class XrClientSession: NSObject {
                     self.arSession?.remove(anchor: anchor)
                 }
             }
-            resolve("success")
+            resolve(true)
         }
     }
 }

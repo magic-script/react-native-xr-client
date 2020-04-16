@@ -19,10 +19,26 @@ class XrClientModule(reactContext: ReactApplicationContext) : ReactContextBaseJa
         return "XrClientBridge"
     }
 
+    @Deprecated("use start", replaceWith = ReplaceWith("start(token, promise)"))
     @ReactMethod
     fun connect(token: String, promise: Promise) {
         tryResolveInBackground(promise) {
             xrClientSession.connect(currentActivity as AppCompatActivity, token)
+        }
+    }
+
+    @ReactMethod
+    fun start(token: String, promise: Promise) {
+        tryResolveInBackground(promise) {
+            xrClientSession.connect(currentActivity as AppCompatActivity, token)
+        }
+    }
+
+    @ReactMethod
+    fun stop(promise: Promise) {
+        tryResolveInBackground(promise) {
+            xrClientSession.stop()
+            true
         }
     }
 
